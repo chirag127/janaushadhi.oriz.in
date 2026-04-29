@@ -57,6 +57,12 @@ filteredMedicines = filteredMedicines.filter(med =>
 
 // Apply sorting
 switch (sortBy) {
+  case 'name':
+    filteredMedicines.sort((a, b) => a.genericName.localeCompare(b.genericName));
+    break;
+  case 'name-desc':
+    filteredMedicines.sort((a, b) => b.genericName.localeCompare(a.genericName));
+    break;
   case 'price-asc':
     filteredMedicines.sort((a, b) => a.mrp - b.mrp);
     break;
@@ -69,7 +75,7 @@ switch (sortBy) {
   case 'category':
     filteredMedicines.sort((a, b) => a.groupName.localeCompare(b.groupName));
     break;
-  default: // name
+  default:
     filteredMedicines.sort((a, b) => a.genericName.localeCompare(b.genericName));
 }
 
