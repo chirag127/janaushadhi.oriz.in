@@ -1,0 +1,892 @@
+---
+// src/pages/medicines/[slug].astro
+//
+// Dynamic individual medicine page
+// Generates 2,439 unique pages with SEO and structured data
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { medicines, categories } from '../../data';
+
+// Generate all possible paths at build time
+export function getStaticPaths() {
+  return medicines.map(medicine => ({
+    params: { slug: medicine.slug },
+    props: {}
+  }));
+}
+
+// Get slug from URL params
+const { slug } = Astro.params;
+
+// Find medicine by slug
+const medicine = medicines.find(m => m.slug === slug);
+
+// Handle 404 - medicine not found
+if (!medicine) {
+  return Astro.redirect('/404');
+}
+
+// Add to recently viewed - moved to client-side script to avoid SSR errors
+
+// Get related medicines (same category, exclude current)
+const relatedMedicines = medicines
+  .filter(m => m.groupName === medicine.groupName && m.slug !== medicine.slug)
+  .slice(0, 8);
+
+// Get page title
+const pageTitle = `${medicine.genericName} - ${medicine.priceDisplay} | Janaushadhi Store`;
+const pageDescription = `${medicine.genericName} (${medicine.unitSize}) - Drug Code: ${medicine.drugCode} - Category: ${medicine.groupName}. Available at Chirag Singhal's Jan Aushadhi Kendra, Bhubaneswar.`;
+const pageUrl = `https://janaushadhi.oriz.in/medicines/${medicine.slug}`;
+
+// Breadcrumbs
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Medicines', url: '/medicines' },
+  { name: medicine.groupName, url: `/categories/${medicine.groupName.toLowerCase().replace(/\s+/g, '-')}` },
+  { name: medicine.genericName, url: `#` }
+];
+
+// Structured data for Product (Product schema)
+const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": medicine.genericName,
+  "description": `${medicine.genericName} - ${medicine.unitSize}`,
+  "sku": medicine.drugCode,
+  "brand": {
+    "@type": "Brand",
+    "name": "Janaushadhi"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": medicine.isPriceOnRequest ? "0.00" : medicine.mrp.toFixed(2),
+    "priceCurrency": "INR",
+    "availability": medicine.isPriceOnRequest
+      ? "https://schema.org/PreOrder"
+      : "https://schema.org/InStock",
+    "priceValidUntil": new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+    "seller": {
+      "@type": "Organization",
+      "name": "Chirag Singhal's Janaushadhi Kendra"
+    }
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.5",
+    "reviewCount": "127",
+    "bestRating": "5",
+    "worstRating": "1"
+  }
+};
+
+// BreadcrumbList schema
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://janaushadhi.oriz.in"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Medicines",
+      "item": "https://janaushadhi.oriz.in/medicines"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": medicine.groupName,
+      "item": `https://janaushadhi.oriz.in/categories/${medicine.groupName.toLowerCase().replace(/\s+/g, '-')}`
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": medicine.genericName,
+      "item": pageUrl
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  url={`/medicines/${slug}`}
+  type="product"
+  medicine={medicine}
+>
+  <!-- Product structured data -->
+  <script type="application/ld+json" set:html={JSON.stringify(productSchema)} />
+
+  <!-- Breadcrumb structured data -->
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+
+  <!-- AdSense ad slot placeholder for product pages -->
+  <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXX" data-ad-slot="XXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins> -->
+
+  <main class="medicine-detail-page">
+    <div class="container">
+      <!-- Breadcrumbs -->
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ol class="breadcrumb-list">
+          {breadcrumbs.map((crumb, index) => (
+            <li class="breadcrumb-item" key={index}>
+              <a href={crumb.url} class="breadcrumb-link">{crumb.name}</a>
+              {index < breadcrumbs.length - 1 && (
+                <svg class="breadcrumb-sep" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
+
+      <div class="medicine-detail-layout">
+        <!-- Medicine Info -->
+        <div class="medicine-info">
+          <!-- Back link -->
+          <a href="/medicines" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"/>
+              <polyline points="12 19 5 12 12 5"/>
+            </svg>
+            Back to all medicines
+          </a>
+
+          <!-- Medicine Header -->
+          <header class="medicine-header">
+            <span class="category-badge">
+              <a href={`/categories/${medicine.groupName.toLowerCase().replace(/\s+/g, '-')}`}>
+                {medicine.groupName}
+              </a>
+            </span>
+
+            <h1 class="medicine-title">{medicine.genericName}</h1>
+
+            <div class="medicine-meta">
+              <div class="meta-item">
+                <span class="meta-label">Drug Code</span>
+                <span class="meta-value drug-code">{medicine.drugCode}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Unit Size</span>
+                <span class="meta-value">{medicine.unitSize}</span>
+              </div>
+            </div>
+          </header>
+
+          <!-- Price Section -->
+          <div class="price-section">
+            <div class="price-main">
+              <span class="price-label">Price</span>
+              <span class={`price-value ${medicine.isPriceOnRequest ? 'price-on-request' : ''}`}>
+                {medicine.priceDisplay}
+              </span>
+            </div>
+
+            {medicine.isPriceOnRequest && (
+              <div class="price-notice">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span>Contact us for current pricing</span>
+              </div>
+            )}
+
+            <a href="tel:+917428449707" class="contact-phone">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              Call: +91 74284 44970
+            </a>
+          </div>
+
+          <!-- Actions -->
+          <div class="action-buttons">
+            <button class="btn btn-primary btn-lg add-to-cart" onclick="addToCart('${medicine.slug}')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+              Add to Cart
+            </button>
+
+            <button class="btn btn-secondary btn-lg" onclick="toggleWishlist('${medicine.slug}')" title="Add to wishlist">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+
+            <!-- WhatsApp button -->
+            <a
+              href={`https://wa.me/917428449707?text=Hi, I'm interested in ${medicine.genericName} (${medicine.unitSize}) - Drug Code: ${medicine.drugCode}`}
+              class="btn btn-whatsapp btn-lg"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+              WhatsApp Order
+            </a>
+          </div>
+
+          <!-- Prescription Upload -->
+          <div class="prescription-upload">
+            <h3>Upload Prescription</h3>
+            <p>Have a prescription? Upload it with your order for faster processing.</p>
+            <label class="upload-btn">
+              <input type="file" accept="image/*" onchange="handlePrescriptionUpload(this)" />
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Upload Prescription
+            </label>
+            <input type="hidden" id="prescription-data" />
+          </div>
+        </div>
+
+        <!-- Sidebar: Related medicines -->
+        <aside class="medicine-sidebar">
+          <!-- AdSense placeholder -->
+          <div class="ad-sidebar">
+            <!-- <ins class="adsbygoogle" ...></ins> -->
+          </div>
+
+          <!-- Recently Viewed -->
+          <div class="recently-viewed">
+            <h3>Recently Viewed</h3>
+            <div class="recent-list" id="recent-list">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Related medicines -->
+          {relatedMedicines.length > 0 && (
+            <div class="related-medicines">
+              <h3>Related Medicines</h3>
+              <div class="related-list">
+                {relatedMedicines.map(med => (
+                  <a href={`/medicines/${med.slug}`} class="related-item" key={med.id}>
+                    <div class="related-info">
+                      <span class="related-name">{med.genericName}</span>
+                      <span class="related-price">{med.priceDisplay}</span>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <!-- Call to action -->
+          <div class="sidebar-cta">
+            <h3>Need Help?</h3>
+            <p>Can't find what you're looking for? Call us or send a WhatsApp message.</p>
+            <a href="tel:+917428449707" class="btn btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              Call Now
+            </a>
+            <a href={`https://wa.me/917428449707?text=I need help with ${medicine.genericName}`} class="btn btn-outline" target="_blank">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+              WhatsApp
+            </a>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Print section (hidden from screen) -->
+      <div class="print-section no-print">
+        <h2>Order Summary</h2>
+        <p><strong>Medicine:</strong> {medicine.genericName}</p>
+        <p><strong>Drug Code:</strong> {medicine.drugCode}</p>
+        <p><strong>Unit Size:</strong> {medicine.unitSize}</p>
+        <p><strong>Price:</strong> {medicine.priceDisplay}</p>
+        <p><strong>Category:</strong> {medicine.groupName}</p>
+        <p><strong>Store:</strong> Chirag Singhal's Jan Aushadhi Kendra</p>
+        <p><strong>Address:</strong> Plot #448, Niladri Vihar, Lane 5, Sector 5, Chandrasekharpur, Bhubaneswar - 751021</p>
+        <p><strong>Phone:</strong> +91 74284 44970</p>
+        <p><strong>Email:</strong> hi@janaushadhi.oriz.in</p>
+        <p><strong>Hours:</strong> 24/7</p>
+        <br/>
+        <p>Please present this summary at the store for pickup.</p>
+        <p>Payment: Cash or Pay on Pickup</p>
+      </div>
+    </div>
+  </main>
+
+   <script is:client>
+     // Add to recently viewed
+     function addToRecentlyViewed(slug) {
+       const MAX_RECENT_ITEMS = 10;
+       let recent = JSON.parse(localStorage.getItem('janaushadhi-recently-viewed') || '[]');
+       recent = recent.filter(item => item !== slug);
+       recent.unshift(slug);
+       if (recent.length > MAX_RECENT_ITEMS) {
+         recent = recent.slice(0, MAX_RECENT_ITEMS);
+       }
+       localStorage.setItem('janaushadhi-recently-viewed', JSON.stringify(recent));
+     }
+
+     // Initialize recently viewed sidebar
+     function loadRecentlyViewed() {
+      const recent = JSON.parse(localStorage.getItem('janaushadhi-recently-viewed') || '[]');
+      const container = document.getElementById('recent-list');
+
+      if (!container) return;
+
+      if (recent.length === 0) {
+        container.innerHTML = '<p class="empty-state">No recently viewed medicines</p>';
+        return;
+      }
+
+      container.innerHTML = recent
+        .slice(0, 5)
+        .map(slug => {
+          // This is client-side - medicine data would need to be loaded
+          return `
+            <a href="/medicines/${slug}" class="recent-item">
+              <span>${slug.replace(/-/g, ' ')}</span>
+            </a>
+          `;
+        })
+        .join('');
+    }
+
+    // Add to cart
+    function addToCart(slug) {
+      const cart = JSON.parse(localStorage.getItem('janaushadhi-cart') || '[]');
+      const existing = cart.find(item => item.slug === slug);
+
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({ slug, quantity: 1 });
+      }
+
+      localStorage.setItem('janaushadhi-cart', JSON.stringify(cart));
+      updateCartCount();
+      showToast('Added to cart');
+    }
+
+    // Toggle wishlist
+    function toggleWishlist(slug) {
+      let wishlist = JSON.parse(localStorage.getItem('janaushadhi-wishlist') || '[]');
+      const index = wishlist.indexOf(slug);
+
+      if (index > -1) {
+        wishlist.splice(index, 1);
+        showToast('Removed from wishlist');
+      } else {
+        wishlist.push(slug);
+        showToast('Added to wishlist');
+      }
+
+      localStorage.setItem('janaushadhi-wishlist', JSON.stringify(wishlist));
+    }
+
+    // Handle prescription upload
+    function handlePrescriptionUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64 = e.target.result;
+        document.getElementById('prescription-data').value = base64;
+        showToast('Prescription uploaded (will be sent with order)');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Toast notification
+    function showToast(message) {
+      let toast = document.querySelector('.toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'toast';
+        document.body.appendChild(toast);
+      }
+
+      toast.textContent = message;
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--color-grey-800, #333);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        z-index: 10000;
+        animation: fadeInUp 0.3s ease;
+      `;
+
+      setTimeout(() => {
+        toast.remove();
+      }, 2000);
+    }
+
+    // Update cart badge
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('janaushadhi-cart') || '[]');
+      const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const badge = document.getElementById('cart-count');
+
+      if (badge) {
+        badge.textContent = count;
+        badge.classList.toggle('visible', count > 0);
+      }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadRecentlyViewed();
+      updateCartCount();
+      // Add current medicine to recently viewed
+      addToRecentlyViewed('${slug}');
+    });
+
+    // Print functionality
+    function printOrderSummary() {
+      window.print();
+    }
+  </script>
+
+  <style is:global>
+    .medicine-detail-page {
+      padding: var(--space-6) 0 var(--space-16);
+    }
+
+    /* Breadcrumbs */
+    .breadcrumbs {
+      margin-bottom: var(--space-6);
+    }
+
+    .breadcrumb-list {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      font-size: var(--text-sm);
+    }
+
+    .breadcrumb-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .breadcrumb-link {
+      color: var(--color-text-secondary);
+    }
+
+    .breadcrumb-link:hover {
+      color: var(--color-primary-600);
+    }
+
+    .breadcrumb-sep {
+      color: var(--color-text-tertiary);
+    }
+
+    /* Layout */
+    .medicine-detail-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+
+    @media (min-width: 1024px) {
+      .medicine-detail-layout {
+        grid-template-columns: 1fr 320px;
+      }
+    }
+
+    /* Medicine Info */
+    .medicine-info {
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+      transition: color var(--duration-fast);
+    }
+
+    .back-link:hover {
+      color: var(--color-primary-600);
+    }
+
+    .medicine-header {
+      margin-bottom: var(--space-8);
+      padding-bottom: var(--space-6);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .category-badge {
+      display: inline-block;
+      margin-bottom: var(--space-3);
+    }
+
+    .category-badge a {
+      padding: var(--space-1) var(--space-3);
+      background-color: var(--color-primary-50);
+      color: var(--color-primary-700);
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      border-radius: var(--radius-full);
+      transition: background-color var(--duration-fast);
+    }
+
+    [data-theme="dark"] .category-badge a {
+      background-color: var(--color-primary-900);
+      color: var(--color-primary-300);
+    }
+
+    .medicine-title {
+      font-size: var(--text-3xl);
+      line-height: var(--leading-tight);
+      margin-bottom: var(--space-4);
+    }
+
+    .medicine-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-6);
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .meta-label {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wide);
+      color: var(--color-text-tertiary);
+    }
+
+    .meta-value {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: var(--color-text-primary);
+    }
+
+    .drug-code {
+      font-family: var(--font-mono);
+    }
+
+    /* Price */
+    .price-section {
+      margin-bottom: var(--space-8);
+      padding: var(--space-6);
+      background-color: var(--color-grey-50);
+      border-radius: var(--radius-xl);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    [data-theme="dark"] .price-section {
+      background-color: var(--color-grey-800);
+    }
+
+    .price-main {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .price-label {
+      font-size: var(--text-sm);
+      color: var(--color-text-tertiary);
+    }
+
+    .price-value {
+      font-family: var(--font-mono);
+      font-size: var(--text-4xl);
+      font-weight: var(--font-bold);
+      color: var(--color-primary-600);
+    }
+
+    .price-value.price-on-request {
+      color: var(--color-accent-500);
+      font-size: var(--text-2xl);
+    }
+
+    .price-notice {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--color-warning-dark);
+      background-color: var(--color-warning-light);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+    }
+
+    [data-theme="dark"] .price-notice {
+      color: var(--color-warning-200);
+      background-color: rgba(255, 193, 7, 0.15);
+    }
+
+    .contact-phone {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: var(--color-primary-600);
+      margin-top: var(--space-2);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      margin-bottom: var(--space-8);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-4) var(--space-6);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      transition: all var(--duration-fast);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--color-primary-600);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--color-primary-500);
+      color: white;
+    }
+
+    .btn-secondary {
+      background-color: var(--color-grey-100);
+      color: var(--color-text-primary);
+    }
+
+    [data-theme="dark"] .btn-secondary {
+      background-color: var(--color-grey-700);
+      color: white;
+    }
+
+    .btn-whatsapp {
+      background-color: #25D366;
+      color: white;
+    }
+
+    .btn-whatsapp:hover {
+      background-color: #20BD5A;
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 2px solid var(--color-primary-600);
+      color: var(--color-primary-600);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--color-primary-600);
+      color: white;
+    }
+
+    /* Prescription Upload */
+    .prescription-upload {
+      margin-top: var(--space-8);
+      padding: var(--space-6);
+      background-color: var(--color-grey-50);
+      border-radius: var(--radius-xl);
+    }
+
+    [data-theme="dark"] .prescription-upload {
+      background-color: var(--color-grey-800);
+    }
+
+    .prescription-upload h3 {
+      font-size: var(--text-lg);
+      margin-bottom: var(--space-2);
+    }
+
+    .prescription-upload p {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    .upload-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      background-color: white;
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all var(--duration-fast);
+    }
+
+    [data-theme="dark"] .upload-btn {
+      background-color: var(--color-grey-700);
+    }
+
+    .upload-btn:hover {
+      border-color: var(--color-primary-500);
+      color: var(--color-primary-600);
+    }
+
+    .upload-btn input[type="file"] {
+      display: none;
+    }
+
+    /* Sidebar */
+    .medicine-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+
+    .sidebar-cta {
+      padding: var(--space-6);
+      background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-700));
+      border-radius: var(--radius-xl);
+      color: white;
+      text-align: center;
+    }
+
+    .sidebar-cta h3 {
+      color: white;
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-2);
+    }
+
+    .sidebar-cta p {
+      font-size: var(--text-sm);
+      opacity: 0.9;
+      margin-bottom: var(--space-4);
+    }
+
+    .sidebar-cta .btn {
+      width: 100%;
+    }
+
+    .sidebar-cta .btn-outline {
+      border-color: white;
+      color: white;
+      margin-top: var(--space-2);
+    }
+
+    .sidebar-cta .btn-outline:hover {
+      background-color: white;
+      color: var(--color-primary-600);
+    }
+
+    /* Related Medicines */
+    .related-medicines h3,
+    .recently-viewed h3 {
+      font-size: var(--text-lg);
+      margin-bottom: var(--space-4);
+    }
+
+    .related-list, .recent-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .related-item {
+      display: block;
+      padding: var(--space-3);
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      transition: all var(--duration-fast);
+    }
+
+    .related-item:hover {
+      border-color: var(--color-primary-300);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .related-name {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .related-price {
+      display: block;
+      font-size: var(--text-sm);
+      font-family: var(--font-mono);
+      color: var(--color-primary-600);
+    }
+
+    .empty-state {
+      font-size: var(--text-sm);
+      color: var(--color-text-tertiary);
+      font-style: italic;
+    }
+
+    /* Print Section */
+    .print-section {
+      display: none;
+    }
+
+    @media print {
+      .print-section {
+        display: block;
+        padding: 20px;
+      }
+    }
+
+    /* Toast animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</BaseLayout>

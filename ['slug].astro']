@@ -1,0 +1,23 @@
+---
+// src/pages/medicines/[slug].astro
+//
+// Dynamic individual medicine page
+// Generates 2,439 unique pages with SEO and structured data
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { medicines, categories } from '../../data';
+import { addToRecentlyViewed, getRecentlyViewed } from '../../lib/cart';
+
+// Generate all possible paths at build time
+export function getStaticPaths() {
+  return medicines.map(medicine => ({
+    params: { slug: medicine.slug },
+    props: {}
+  }));
+}
+
+// Get slug from URL params
+const { slug } = Astro.params;
+
+// Find medicine by slug
+const medicine = medicines.find(m => m.slug === slug);

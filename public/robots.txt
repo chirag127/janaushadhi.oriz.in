@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://janaushadhi.oriz.in/sitemap.xml
+
+# Disallow admin and private paths
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_astro/
+
+# Allow all important content
+Allow: /medicines/
+Allow: /categories/
+Allow: /search
+Allow: /cart
+Allow: /checkout

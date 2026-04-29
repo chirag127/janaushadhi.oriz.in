@@ -1,0 +1,128 @@
+---
+// src/pages/404.astro
+// 404 Not Found Page
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = '404 - Page Not Found | Janaushadhi Store';
+const description = 'The page you are looking for does not exist. Return to Janaushadhi Store homepage.';
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="not-found-page">
+    <div class="container">
+      <div class="error-content">
+        <div class="error-code">404</div>
+        <h1>Page Not Found</h1>
+        <p class="lead">
+          The page you're looking for doesn't exist or has been moved.
+        </p>
+
+        <div class="error-actions">
+          <a href="/" class="btn btn-primary btn-lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            Go to Homepage
+          </a>
+          <a href="/medicines" class="btn btn-outline btn-lg">
+            Browse Medicines
+          </a>
+        </div>
+
+        <div class="suggestions">
+          <h3>Try:</h3>
+          <ul>
+            <li><a href="/search">Search for medicines</a></li>
+            <li><a href="/categories">Browse categories</a></li>
+            <li><a href="/contact">Contact us</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <style is:global>
+    .not-found-page {
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-12) 0;
+    }
+
+    .error-content {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .error-code {
+      font-family: var(--font-display);
+      font-size: 12rem;
+      font-weight: var(--font-bold);
+      line-height: 1;
+      color: var(--color-primary-200);
+      margin-bottom: var(--space-4);
+    }
+
+    [data-theme="dark"] .error-code {
+      color: var(--color-primary-900);
+    }
+
+    .error-code ~ h1 {
+      font-size: var(--text-4xl);
+      margin-bottom: var(--space-4);
+    }
+
+    .lead {
+      font-size: var(--text-lg);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-8);
+    }
+
+    .error-actions {
+      display: flex;
+      gap: var(--space-4);
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: var(--space-8);
+    }
+
+    .btn-lg svg {
+      margin-right: var(--space-2);
+    }
+
+    .suggestions {
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .suggestions h3 {
+      font-size: var(--text-base);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wide);
+      margin-bottom: var(--space-3);
+    }
+
+    .suggestions ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      gap: var(--space-6);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .suggestions li {
+      margin: 0;
+    }
+
+    .suggestions a {
+      color: var(--color-primary-600);
+      font-weight: var(--font-medium);
+    }
+  </style>
+</BaseLayout>

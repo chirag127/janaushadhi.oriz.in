@@ -1,0 +1,260 @@
+---
+// src/pages/cookie-policy.astro
+// Cookie Policy
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Cookie Policy | Janaushadhi Store';
+const description = 'Cookie Policy for Janaushadhi Store - How we use cookies and similar technologies on our website.';
+---
+
+<BaseLayout title={title} description={description} url="/cookie-policy">
+  <main class="legal-page">
+    <div class="container">
+      <article class="legal-content">
+        <header class="legal-header">
+          <h1>Cookie Policy</h1>
+          <p class="last-updated">Last updated: {new Date().toLocaleDateString()}</p>
+        </header>
+
+        <section>
+          <h2>1. What Are Cookies</h2>
+          <p>
+            Cookies are small text files that are placed on your device when you visit a website.
+            They are widely used to make websites work more efficiently and provide information to
+            website owners.
+          </p>
+        </section>
+
+        <section>
+          <h2>2. How We Use Cookies</h2>
+          <p>We use cookies for the following purposes:</p>
+
+          <h3>Essential Cookies</h3>
+          <ul>
+            <li>Shopping cart functionality</li>
+            <li>User authentication</li>
+            <li>Security & anti-fraud</li>
+          </ul>
+
+          <h3>Preference Cookies</h3>
+          <ul>
+            <li>Theme preference (light/dark mode)</li>
+            <li>Language settings</li>
+            <li>Recently viewed medicines</li>
+          </ul>
+
+          <h3>Analytics Cookies</h3>
+          <ul>
+            <li>Google Analytics 4</li>
+            <li>Cloudflare Web Analytics</li>
+            <li>Website performance monitoring</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>3. Cookies We Set</h2>
+          <table class="cookie-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Purpose</th>
+                <th>Duration</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>janaushadhi-cart</code></td>
+                <td>Stores shopping cart items</td>
+                <td>Session</td>
+              </tr>
+              <tr>
+                <td><code>janaushadhi-wishlist</code></td>
+                <td>Wishlist items</td>
+                <td>30 days</td>
+              </tr>
+              <tr>
+                <td><code>janaushadhi-recently-viewed</code></td>
+                <td>Recently viewed medicines</td>
+                <td>90 days</td>
+              </tr>
+              <tr>
+                <td><code>theme</code></td>
+                <td>Dark/light mode preference</td>
+                <td>1 year</td>
+              </tr>
+              <tr>
+                <td><code>_ga</code></td>
+                <td>Google Analytics identifier</td>
+                <td>2 years</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>4. Managing Cookies</h2>
+          <p>
+            You can control and manage cookies through your browser settings. Most browsers allow:
+          </p>
+          <ul>
+            <li>Viewing stored cookies</li>
+            <li>Deleting specific cookies</li>
+            <li>Blocking third-party cookies</li>
+            <li>Clearing all cookies when you close the browser</li>
+          </ul>
+          <p>
+            <strong>Note:</strong> Disabling essential cookies may break website functionality,
+            including the shopping cart.
+          </p>
+        </section>
+
+        <section>
+          <h2>5. Third-Party Cookies</h2>
+          <p>
+            Some cookies are placed by third-party services we use:
+          </p>
+          <ul>
+            <li><strong>Google Analytics</strong> - Analytics tracking</li>
+            <li><strong>Cloudflare</strong> - Security and performance</li>
+            <li><strong>Fonts.googleapis.com</strong> - Font loading</li>
+          </ul>
+          <p>
+            These third parties have their own privacy policies.
+          </p>
+        </section>
+
+        <section>
+          <h2>6. Cookie Consent</h2>
+          <p>
+            When you first visit our site, you will see a cookie consent banner. You can:
+          </p>
+          <ul>
+            <li><strong>Accept All</strong> - All cookies (including analytics)</li>
+            <li><strong>Essential Only</strong> - Only necessary cookies</li>
+          </ul>
+          <p>
+            You can change your preference at any time via the cookie settings in your browser
+            or by clearing cookies and revisiting the site.
+          </p>
+        </section>
+
+        <section>
+          <h2>7. Updates to This Policy</h2>
+          <p>
+            We may update this Cookie Policy from time to time. Any changes will be posted on
+            this page with an updated revision date.
+          </p>
+        </section>
+
+        <section>
+          <h2>8. Contact Us</h2>
+          <p>
+            If you have questions about our use of cookies, please contact us:
+          </p>
+          <ul>
+            <li>Email: <a href="mailto:hi@janaushadhi.oriz.in">hi@janaushadhi.oriz.in</a></li>
+            <li>Phone: <a href="tel:+917428449707">+91 74284 44970</a></li>
+          </ul>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <style is:global>
+    .legal-page {
+      padding: var(--space-8) 0 var(--space-16);
+    }
+
+    .legal-content {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+    }
+
+    .legal-header {
+      margin-bottom: var(--space-8);
+      padding-bottom: var(--space-6);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .legal-header h1 {
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-2);
+    }
+
+    .last-updated {
+      color: var(--color-text-secondary);
+      font-size: var(--text-sm);
+    }
+
+    section {
+      margin-bottom: var(--space-8);
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-4);
+      color: var(--color-primary-600);
+    }
+
+    h3 {
+      font-size: var(--text-lg);
+      margin: var(--space-4) 0 var(--space-2);
+    }
+
+    .lead {
+      font-size: var(--text-lg);
+      line-height: var(--leading-relaxed);
+      color: var(--color-text-secondary);
+    }
+
+    p {
+      margin-bottom: var(--space-4);
+      line-height: var(--leading-relaxed);
+      color: var(--color-text-secondary);
+    }
+
+    ul {
+      margin-bottom: var(--space-4);
+      padding-left: var(--space-6);
+    }
+
+    li {
+      margin-bottom: var(--space-2);
+    }
+
+    a {
+      color: var(--color-primary-600);
+    }
+
+    .cookie-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: var(--space-4);
+    }
+
+    .cookie-table th,
+    .cookie-table td {
+      padding: var(--space-3);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .cookie-table th {
+      background-color: var(--color-grey-50);
+      font-weight: var(--font-semibold);
+    }
+
+    .cookie-table code {
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      background-color: var(--color-grey-100);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+    }
+  </style>
+</BaseLayout>

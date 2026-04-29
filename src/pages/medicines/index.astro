@@ -1,0 +1,730 @@
+---
+// src/pages/medicines/index.astro
+//
+// Medicines listing page with filters, sorting, and pagination
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MedicineCard from '../../components/MedicineCard.astro';
+import { medicines, categories } from '../../data';
+
+const title = 'All Medicines - Browse 2,400+ Generic Drugs | Janaushadhi Store';
+const description = 'Complete list of 2,400+ generic medicines available at Janaushadhi Store. Filter by category, price, or search by name, drug code.';
+
+// Get URL params for filtering and sorting
+const urlParams = new URLSearchParams(Astro.url.search);
+const page = parseInt(urlParams.get('page') || '1');
+const limit = 24; // Items per page
+const offset = (page - 1) * limit;
+
+// Filter state from query params
+const selectedCategories = urlParams.get('cat')?.split(',').filter(Boolean) || [];
+const minPrice = parseFloat(urlParams.get('min') || '0');
+const maxPrice = parseFloat(urlParams.get('max') || '999999');
+const showPriceOnRequest = urlParams.get('por') === 'true';
+const sortBy = urlParams.get('sort') || 'name';
+const viewMode = urlParams.get('view') || 'grid';
+
+// Helper to build query string for pagination (server-side)
+function buildQueryString(pageNum: number): string {
+  const params = new URLSearchParams();
+  if (selectedCategories.length > 0) params.set('cat', selectedCategories.join(','));
+  if (minPrice > 0) params.set('min', minPrice.toString());
+  if (maxPrice < 999999) params.set('max', maxPrice.toString());
+  if (showPriceOnRequest) params.set('por', 'true');
+  if (sortBy !== 'name') params.set('sort', sortBy);
+  if (viewMode !== 'grid') params.set('view', viewMode);
+  params.set('page', pageNum.toString());
+  return params.toString();
+}
+
+// Start with all medicines
+let filteredMedicines = [...medicines];
+
+// Apply filters
+if (selectedCategories.length > 0) {
+  filteredMedicines = filteredMedicines.filter(med =>
+    selectedCategories.includes(med.groupName)
+  );
+}
+
+if (!showPriceOnRequest) {
+  filteredMedicines = filteredMedicines.filter(med => !med.isPriceOnRequest);
+}
+
+filteredMedicines = filteredMedicines.filter(med =>
+  med.mrp >= minPrice && med.mrp <= maxPrice
+);
+
+// Apply sorting
+switch (sortBy) {
+  case 'price-asc':
+    filteredMedicines.sort((a, b) => a.mrp - b.mrp);
+    break;
+  case 'price-desc':
+    filteredMedicines.sort((a, b) => b.mrp - a.mrp);
+    break;
+  case 'drugCode':
+    filteredMedicines.sort((a, b) => parseInt(a.drugCode) - parseInt(b.drugCode));
+    break;
+  case 'category':
+    filteredMedicines.sort((a, b) => a.groupName.localeCompare(b.groupName));
+    break;
+  default: // name
+    filteredMedicines.sort((a, b) => a.genericName.localeCompare(b.genericName));
+}
+
+// Pagination
+const totalItems = filteredMedicines.length;
+const totalPages = Math.ceil(totalItems / limit);
+const paginatedMedicines = filteredMedicines.slice(offset, offset + limit);
+
+// Breadcrumbs
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Medicines', url: '/medicines' }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  url="/medicines"
+>
+
+  <!-- Structured data for ItemList (Listing page) -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "All Medicines",
+    "description": description,
+    "numberOfItems": totalItems,
+    "itemListElement": paginatedMedicines.map((med, index) => ({
+      "@type": "ListItem",
+      "position": offset + index + 1,
+      "url": `https://janaushadhi.oriz.in/medicines/${med.slug}`
+    }))
+  })} />
+
+  <main class="medicines-page">
+    <div class="container">
+      <!-- Page Header -->
+      <header class="page-header">
+        <h1>All Medicines</h1>
+        <p class="lead">{totalItems.toLocaleString()} medicines available</p>
+      </header>
+
+      <div class="catalog-layout">
+        <!-- Filter Sidebar -->
+        <aside class="filter-sidebar">
+          <div class="filter-header">
+            <h2>Filters</h2>
+            <a href="/medicines" class="clear-filters">Clear all</a>
+          </div>
+
+          <!-- Category Filter -->
+          <div class="filter-section">
+            <h3 class="filter-title">Categories</h3>
+            <div class="filter-options">
+              {categories.slice(0, 20).map(category => (
+                <label class="filter-checkbox" key={category.slug}>
+                  <input
+                    type="checkbox"
+                    name="category"
+                    value={category.name}
+                    checked={selectedCategories.includes(category.name)}
+                    onchange="updateFilter('cat', this.checked, this.value)"
+                  />
+                  <span class="checkbox-text">{category.name}</span>
+                  <span class="checkbox-count">{category.count}</span>
+                </label>
+              ))}
+            </div>
+            <button class="show-more-btn" id="show-more-categories">Show more</button>
+          </div>
+
+          <!-- Price Range Filter -->
+          <div class="filter-section">
+            <h3 class="filter-title">Price Range</h3>
+            <div class="price-inputs">
+              <input
+                type="number"
+                placeholder="Min ₹"
+                value={minPrice > 0 ? minPrice : ''}
+                onchange="updatePriceFilter('min', this.value)"
+                min="0"
+              />
+              <span>—</span>
+              <input
+                type="number"
+                placeholder="Max ₹"
+                value={maxPrice < 999999 ? maxPrice : ''}
+                onchange="updatePriceFilter('max', this.value)"
+                min="0"
+              />
+            </div>
+          </div>
+
+          <!-- Price on Request Toggle -->
+          <div class="filter-section">
+            <label class="filter-checkbox">
+              <input
+                type="checkbox"
+                checked={showPriceOnRequest}
+                onchange="updateFilter('por', this.checked, 'true')"
+              />
+              <span class="checkbox-text">Show "Price on Request" items</span>
+            </label>
+          </div>
+
+          <!-- View Mode Toggle -->
+          <div class="filter-section">
+            <h3 class="filter-title">View</h3>
+            <div class="view-mode-toggle">
+              <button
+                class={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                onclick="setViewMode('grid')"
+                title="Grid view"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7"/>
+                  <rect x="14" y="3" width="7" height="7"/>
+                  <rect x="3" y="14" width="7" height="7"/>
+                  <rect x="14" y="14" width="7" height="7"/>
+                </svg>
+              </button>
+              <button
+                class={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
+                onclick="setViewMode('list')"
+                title="List view"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="8" y1="6" x2="21" y2="6"/>
+                  <line x1="8" y1="12" x2="21" y2="12"/>
+                  <line x1="8" y1="18" x2="21" y2="18"/>
+                  <line x1="3" y1="6" x2="3.01" y2="6"/>
+                  <line x1="3" y1="12" x2="3.01" y2="12"/>
+                  <line x1="3" y1="18" x2="3.01" y2="18"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+          <!-- Toolbar -->
+          <div class="toolbar">
+            <div class="results-count">
+              Showing {offset + 1}–{Math.min(offset + limit, totalItems)} of {totalItems.toLocaleString()}
+            </div>
+
+            <div class="sort-control">
+              <label for="sort">Sort by:</label>
+              <select
+                id="sort"
+                value={sortBy}
+                onchange="updateSort(this.value)"
+              >
+                <option value="name">Name (A-Z)</option>
+                <option value="name-desc">Name (Z-A)</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="drugCode">Drug Code</option>
+                <option value="category">Category</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Active Filters Tags -->
+          {(selectedCategories.length > 0 || minPrice > 0 || maxPrice < 999999) && (
+            <div class="active-filters">
+              {selectedCategories.map(cat => (
+                <span class="filter-tag" key={cat}>
+                  {cat}
+                  <button onclick="removeCategory('${cat}')" aria-label="Remove filter">×</button>
+                </span>
+              ))}
+              {(minPrice > 0 || maxPrice < 999999) && (
+                <span class="filter-tag">
+                  ₹{minPrice > 0 ? minPrice : 0} – ₹{maxPrice < 999999 ? maxPrice : '∞'}
+                  <button onclick="clearPriceFilter()" aria-label="Remove price filter">×</button>
+                </span>
+              )}
+            </div>
+          )}
+
+          <!-- Medicine Grid -->
+          {paginatedMedicines.length > 0 ? (
+            <div class={`medicine-grid medicines-grid--${viewMode}`}>
+              {paginatedMedicines.map(medicine => (
+                <MedicineCard
+                  medicine={medicine}
+                  variant={viewMode as 'grid' | 'list' | 'compact'}
+                  key={medicine.id}
+                />
+              ))}
+            </div>
+          ) : (
+            <div class="no-results">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+              </svg>
+              <h3>No medicines found</h3>
+              <p>Try adjusting your filters or search terms.</p>
+              <a href="/medicines" class="btn btn-primary">Clear all filters</a>
+            </div>
+          )}
+
+          <!-- Pagination -->
+          {totalPages > 1 && (
+            <nav class="pagination" aria-label="Medicine pagination">
+              <a
+                href={page > 1 ? `?${buildQueryString(page - 1)}` : '#'}
+                class="page-btn"
+                class:list={page === 1}
+                aria-disabled={page === 1}
+              >
+                Previous
+              </a>
+
+              <div class="page-numbers">
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 2)
+                  .map((p, idx, arr) => (
+                    <>
+                      {idx > 0 && arr[idx - 1] !== p - 1 && (
+                        <span class="page-ellipsis">…</span>
+                      )}
+                      <a
+                        href={`?${buildQueryString(p)}`}
+                        class={`page-number ${p === page ? 'active' : ''}`}
+                      >
+                        {p}
+                      </a>
+                    </>
+                  ))}
+              </div>
+
+              <a
+                href={page < totalPages ? `?${buildQueryString(page + 1)}` : '#'}
+                class="page-btn"
+                class:list={page === totalPages}
+                aria-disabled={page === totalPages}
+              >
+                Next
+              </a>
+            </nav>
+          )}
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script is:inline>
+    // Build query string with current filters and new page
+    function buildQueryString(page) {
+      const params = new URLSearchParams(window.location.search);
+      params.set('page', page);
+      return params.toString();
+    }
+
+    // Update filters
+    function updateFilter(type, checked, value) {
+      const params = new URLSearchParams(window.location.search);
+      const current = params.get(type)?.split(',').filter(Boolean) || [];
+
+      if (checked && !current.includes(value)) {
+        current.push(value);
+        params.set(type, current.join(','));
+      } else if (!checked) {
+        const filtered = current.filter(v => v !== value);
+        if (filtered.length > 0) {
+          params.set(type, filtered.join(','));
+        } else {
+          params.delete(type);
+        }
+      }
+
+      window.location.search = params.toString();
+    }
+
+    // Update price filter
+    function updatePriceFilter(type, value) {
+      const params = new URLSearchParams(window.location.search);
+      if (value) {
+        params.set(type, value);
+      } else {
+        params.delete(type);
+      }
+      window.location.search = params.toString();
+    }
+
+    // Clear price filter
+    function clearPriceFilter() {
+      const params = new URLSearchParams(window.location.search);
+      params.delete('min');
+      params.delete('max');
+      window.location.search = params.toString();
+    }
+
+    // Remove category filter
+    function removeCategory(cat) {
+      const params = new URLSearchParams(window.location.search);
+      const current = params.get('cat')?.split(',').filter(Boolean) || [];
+      const filtered = current.filter(c => c !== cat);
+      if (filtered.length > 0) {
+        params.set('cat', filtered.join(','));
+      } else {
+        params.delete('cat');
+      }
+      window.location.search = params.toString();
+    }
+
+    // Update sort
+    function updateSort(value) {
+      const params = new URLSearchParams(window.location.search);
+      params.set('sort', value);
+      params.delete('page'); // Reset to page 1
+      window.location.search = params.toString();
+    }
+
+    // Set view mode
+    function setViewMode(mode) {
+      const params = new URLSearchParams(window.location.search);
+      params.set('view', mode);
+      window.location.search = params.toString();
+    }
+  </script>
+
+  <style is:global>
+    .medicines-page {
+      padding: var(--space-8) 0 var(--space-16);
+    }
+
+    .page-header {
+      margin-bottom: var(--space-8);
+    }
+
+    .page-header h1 {
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-2);
+    }
+
+    /* Catalog Layout */
+    .catalog-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+
+    @media (min-width: 1024px) {
+      .catalog-layout {
+        grid-template-columns: 280px 1fr;
+      }
+    }
+
+    /* Filter Sidebar */
+    .filter-sidebar {
+      display: none;
+    }
+
+    @media (min-width: 1024px) {
+      .filter-sidebar {
+        display: block;
+      }
+    }
+
+    .filter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-6);
+    }
+
+    .filter-header h2 {
+      font-size: var(--text-lg);
+    }
+
+    .clear-filters {
+      font-size: var(--text-sm);
+      color: var(--color-primary-600);
+    }
+
+    .filter-section {
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-6);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .filter-section:last-child {
+      border-bottom: none;
+    }
+
+    .filter-title {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-3);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wide);
+    }
+
+    .filter-options {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .filter-checkbox {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      cursor: pointer;
+      padding: var(--space-1) 0;
+    }
+
+    .filter-checkbox input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--color-primary-600);
+    }
+
+    .checkbox-text {
+      flex: 1;
+      color: var(--color-text-secondary);
+    }
+
+    .checkbox-count {
+      font-size: var(--text-xs);
+      color: var(--color-text-tertiary);
+      background-color: var(--color-grey-100);
+      padding: 1px 6px;
+      border-radius: var(--radius-sm);
+    }
+
+    .show-more-btn {
+      margin-top: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--color-primary-600);
+      font-weight: var(--font-medium);
+    }
+
+    .price-inputs {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .price-inputs input {
+      flex: 1;
+      padding: var(--space-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+    }
+
+    .view-mode-toggle {
+      display: flex;
+      gap: var(--space-1);
+      background-color: var(--color-grey-100);
+      padding: var(--space-1);
+      border-radius: var(--radius-md);
+      width: fit-content;
+    }
+
+    .view-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      color: var(--color-text-secondary);
+      transition: all var(--duration-fast);
+    }
+
+    .view-btn.active {
+      background-color: white;
+      color: var(--color-primary-600);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+      gap: var(--space-4);
+    }
+
+    .results-count {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .sort-control {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .sort-control label {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .sort-control select {
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      background-color: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      cursor: pointer;
+    }
+
+    /* Active Filters */
+    .active-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+
+    .filter-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-1) var(--space-3);
+      background-color: var(--color-primary-100);
+      color: var(--color-primary-700);
+      font-size: var(--text-sm);
+      border-radius: var(--radius-full);
+    }
+
+    .filter-tag button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: var(--radius-full);
+      font-size: var(--text-lg);
+      line-height: 1;
+      color: var(--color-primary-600);
+    }
+
+    .filter-tag button:hover {
+      background-color: var(--color-primary-200);
+    }
+
+    /* Medicine Grid */
+    .medicines-grid--grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: var(--space-6);
+    }
+
+    .medicines-grid--list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .medicines-grid--list .medicine-card {
+      max-width: 100%;
+    }
+
+    /* No Results */
+    .no-results {
+      text-align: center;
+      padding: var(--space-16) var(--space-4);
+      color: var(--color-text-secondary);
+    }
+
+    .no-results svg {
+      margin-bottom: var(--space-4);
+      opacity: 0.5;
+    }
+
+    .no-results h3 {
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-2);
+    }
+
+    .no-results p {
+      margin-bottom: var(--space-6);
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-12);
+    }
+
+    .page-btn {
+      padding: var(--space-2) var(--space-4);
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-text-primary);
+      transition: all var(--duration-fast);
+    }
+
+    .page-btn:hover:not(.disabled) {
+      border-color: var(--color-primary-500);
+      color: var(--color-primary-600);
+    }
+
+    .page-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .page-numbers {
+      display: flex;
+      gap: var(--space-1);
+    }
+
+    .page-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-text-secondary);
+      transition: all var(--duration-fast);
+    }
+
+    .page-number:hover {
+      background-color: var(--color-grey-100);
+    }
+
+    .page-number.active {
+      background-color: var(--color-primary-600);
+      color: white;
+    }
+
+    .page-ellipsis {
+      color: var(--color-text-tertiary);
+    }
+  </style>
+</BaseLayout>

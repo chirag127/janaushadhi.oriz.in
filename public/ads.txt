@@ -1,0 +1,5 @@
+# Janaushadhi Store AdSense Publisher ID
+# This file is required for Google AdSense verification
+
+# Replace with your actual AdSense client ID
+google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0

@@ -1,0 +1,465 @@
+---
+// src/pages/cart.astro
+//
+// Shopping cart page
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { medicines } from '../data';
+import { getCart, removeFromCart, updateQuantity, getCartTotal, clearCart } from '../lib/cart';
+
+const title = 'Shopping Cart | Janaushadhi Store';
+const description = 'View your shopping cart. Review medicines, quantities, and total before checkout.';
+
+const cartItems = getCart();
+
+// Enrich cart items with medicine data
+const enrichedCart = cartItems.map(item => {
+  const medicine = medicines.find(m => m.slug === item.slug);
+  return {
+    ...item,
+    medicine
+  };
+}).filter(item => item.medicine);
+
+const subtotal = enrichedCart.reduce((sum, item) => {
+  const price = item.medicine.mrp || 0;
+  return sum + (price * item.quantity);
+}, 0);
+
+const shipping = 0; // Free pickup
+const total = subtotal + shipping;
+---
+
+<BaseLayout title={title} description={description} url="/cart">
+  <main class="cart-page">
+    <div class="container">
+      <header class="page-header">
+        <h1>Shopping Cart</h1>
+        <p class="lead">{enrichedCart.length} item{enrichedCart.length !== 1 ? 's' : ''} in your cart</p>
+      </header>
+
+      {enrichedCart.length > 0 ? (
+        <div class="cart-layout">
+          <!-- Cart Items -->
+          <div class="cart-items">
+            <div class="cart-header">
+              <span class="col-product">Product</span>
+              <span class="col-price">Price</span>
+              <span class="col-quantity">Quantity</span>
+              <span class="col-total">Total</span>
+              <span class="col-action"></span>
+            </div>
+
+            {enrichedCart.map(item => (
+              <div class="cart-item" key={item.slug}>
+                <div class="col-product">
+                  <a href={`/medicines/${item.slug}`} class="product-link">
+                    <span class="product-name">{item.medicine.genericName}</span>
+                    <span class="product-meta">{item.medicine.unitSize} • {item.medicine.drugCode}</span>
+                  </a>
+                </div>
+
+                <div class="col-price">
+                  <span class={item.medicine.isPriceOnRequest ? 'price-on-request' : ''}>
+                    {item.medicine.priceDisplay}
+                  </span>
+                </div>
+
+                <div class="col-quantity">
+                  <div class="quantity-selector">
+                    <button
+                      class="qty-btn"
+                      onclick="updateQty('${item.slug}', ${item.quantity - 1})"
+                      aria-label="Decrease quantity"
+                    >−</button>
+                    <input
+                      type="number"
+                      class="qty-input"
+                      value={item.quantity}
+                      min="1"
+                      onchange="setQty('${item.slug}', this.value)"
+                    />
+                    <button
+                      class="qty-btn"
+                      onclick="updateQty('${item.slug}', ${item.quantity + 1})"
+                      aria-label="Increase quantity"
+                    >+</button>
+                  </div>
+                </div>
+
+                <div class="col-total">
+                  <span class="item-total">
+                    {item.medicine.isPriceOnRequest ? '—' : `₹${(item.medicine.mrp * item.quantity).toFixed(2)}`}
+                  </span>
+                </div>
+
+                <div class="col-action">
+                  <button
+                    class="remove-btn"
+                    onclick="removeItem('${item.slug}')"
+                    aria-label="Remove item"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <!-- Cart Summary -->
+          <aside class="cart-summary">
+            <div class="summary-card">
+              <h2>Order Summary</h2>
+
+              <div class="summary-row">
+                <span>Subtotal ({enrichedCart.length} items)</span>
+                <span>₹{subtotal.toFixed(2)}</span>
+              </div>
+
+              <div class="summary-row">
+                <span>Pickup/Delivery</span>
+                <span class="free-shipping">Free</span>
+              </div>
+
+              <div class="summary-divider"></div>
+
+              <div class="summary-row total">
+                <span>Total</span>
+                <span>₹{total.toFixed(2)}</span>
+              </div>
+
+              <p class="price-notice">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                Some items have "Price on Request". You'll be contacted for those.
+              </p>
+
+              <a href="/checkout" class="btn btn-primary btn-lg btn-block">
+                Proceed to Checkout
+              </a>
+
+              <a href="/medicines" class="continue-shopping">
+                Continue Shopping
+              </a>
+
+              <button class="clear-cart-btn" onclick="clearCart()">
+                Clear Cart
+              </button>
+            </div>
+
+            <!-- AdSense placeholder -->
+            <div class="ad-unit">
+              <!-- <ins class="adsbygoogle" ...></ins> -->
+            </div>
+          </aside>
+        </div>
+      ) : (
+        <div class="empty-cart">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <circle cx="9" cy="21" r="1"/>
+            <circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+          <h2>Your cart is empty</h2>
+          <p>Looks like you haven't added any medicines yet.</p>
+          <a href="/medicines" class="btn btn-primary btn-lg">
+            Browse Medicines
+          </a>
+        </div>
+      )}
+    </div>
+  </main>
+
+  <script is:client>
+    function updateQty(slug, newQty) {
+      if (newQty < 1) return;
+      updateQuantity(slug, newQty);
+      location.reload();
+    }
+
+    function setQty(slug, value) {
+      const qty = parseInt(value);
+      if (qty > 0) {
+        updateQuantity(slug, qty);
+        location.reload();
+      }
+    }
+
+    function removeItem(slug) {
+      if (confirm('Remove this item from cart?')) {
+        removeFromCart(slug);
+        location.reload();
+      }
+    }
+
+    function clearCart() {
+      if (confirm('Clear all items from cart?')) {
+        clearCart();
+        location.reload();
+      }
+    }
+  </script>
+
+  <style is:global>
+    .cart-page {
+      padding: var(--space-8) 0 var(--space-16);
+    }
+
+    .cart-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+
+    @media (min-width: 1024px) {
+      .cart-layout {
+        grid-template-columns: 1fr 400px;
+      }
+    }
+
+    /* Cart Items */
+    .cart-items {
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+
+    .cart-header {
+      display: none;
+      padding: var(--space-4) var(--space-6);
+      background-color: var(--color-grey-50);
+      border-bottom: 1px solid var(--color-border);
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--color-text-secondary);
+    }
+
+    @media (min-width: 768px) {
+      .cart-header {
+        display: grid;
+        grid-template-columns: 2fr 1fr 120px 100px 60px;
+        gap: var(--space-4);
+        align-items: center;
+      }
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto auto;
+      gap: var(--space-4);
+      align-items: center;
+      padding: var(--space-4) var(--space-6);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .col-product {
+      min-width: 0;
+    }
+
+    .product-link {
+      display: block;
+    }
+
+    .product-name {
+      display: block;
+      font-weight: var(--font-medium);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .product-meta {
+      font-size: var(--text-sm);
+      color: var(--color-text-tertiary);
+    }
+
+    .col-price,
+    .col-total {
+      min-width: 80px;
+      text-align: right;
+      font-family: var(--font-mono);
+    }
+
+    .price-on-request {
+      font-size: var(--text-sm);
+      color: var(--color-accent-600);
+    }
+
+    .col-quantity {
+      min-width: 120px;
+    }
+
+    .quantity-selector {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .qty-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-lg);
+      color: var(--color-text-secondary);
+      transition: background-color var(--duration-fast);
+    }
+
+    .qty-btn:hover {
+      background-color: var(--color-grey-100);
+    }
+
+    .qty-input {
+      width: 48px;
+      height: 32px;
+      border: none;
+      border-left: 1px solid var(--color-border);
+      border-right: 1px solid var(--color-border);
+      text-align: center;
+      font-size: var(--text-sm);
+    }
+
+    .col-action {
+      min-width: 40px;
+      text-align: right;
+    }
+
+    .remove-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      color: var(--color-text-tertiary);
+      border-radius: var(--radius-md);
+      transition: all var(--duration-fast);
+    }
+
+    .remove-btn:hover {
+      background-color: var(--color-error-light);
+      color: var(--color-error);
+    }
+
+    /* Cart Summary */
+    .cart-summary {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+
+    .summary-card {
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      position: sticky;
+      top: calc(var(--header-height) + var(--space-6));
+    }
+
+    .summary-card h2 {
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-6);
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--text-base);
+      margin-bottom: var(--space-3);
+    }
+
+    .summary-row.total {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      color: var(--color-text-primary);
+    }
+
+    .free-shipping {
+      color: var(--color-success);
+      font-weight: var(--font-medium);
+    }
+
+    .summary-divider {
+      height: 1px;
+      background-color: var(--color-border);
+      margin: var(--space-4) 0;
+    }
+
+    .price-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+      font-size: var(--text-xs);
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-6);
+    }
+
+    .price-notice svg {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .btn-block {
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin-bottom: var(--space-3);
+    }
+
+    .continue-shopping {
+      display: block;
+      text-align: center;
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    .clear-cart-btn {
+      width: 100%;
+      padding: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--color-text-tertiary);
+      border-radius: var(--radius-md);
+    }
+
+    .clear-cart-btn:hover {
+      background-color: var(--color-error-light);
+      color: var(--color-error);
+    }
+
+    /* Empty Cart */
+    .empty-cart {
+      text-align: center;
+      padding: var(--space-16) var(--space-4);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .empty-cart svg {
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-6);
+    }
+
+    .empty-cart h2 {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-2);
+    }
+
+    .empty-cart p {
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-8);
+    }
+  </style>
+</BaseLayout>

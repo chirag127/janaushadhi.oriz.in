@@ -1,0 +1,342 @@
+[
+  {
+    "name": "Altitude Sickness",
+    "slug": "altitude-sickness",
+    "count": 1
+  },
+  {
+    "name": "Anaesthetics",
+    "slug": "anaesthetics",
+    "count": 10
+  },
+  {
+    "name": "Analgesic/Antipyretic/Anti-Inflammatory",
+    "slug": "analgesicantipyreticanti-inflammatory",
+    "count": 106
+  },
+  {
+    "name": "Anthelmintic",
+    "slug": "anthelmintic",
+    "count": 12
+  },
+  {
+    "name": "Anti-Alcoholism",
+    "slug": "anti-alcoholism",
+    "count": 3
+  },
+  {
+    "name": "Anti-Diabetic",
+    "slug": "anti-diabetic",
+    "count": 148
+  },
+  {
+    "name": "Anti-Diuretic",
+    "slug": "anti-diuretic",
+    "count": 1
+  },
+  {
+    "name": "Anti-Emetic",
+    "slug": "anti-emetic",
+    "count": 12
+  },
+  {
+    "name": "Anti-fungal",
+    "slug": "anti-fungal",
+    "count": 4
+  },
+  {
+    "name": "Anti-Fungal",
+    "slug": "anti-fungal",
+    "count": 23
+  },
+  {
+    "name": "Anti-Histaminic",
+    "slug": "anti-histaminic",
+    "count": 29
+  },
+  {
+    "name": "Anti-Malarial",
+    "slug": "anti-malarial",
+    "count": 14
+  },
+  {
+    "name": "Anti-Migraine",
+    "slug": "anti-migraine",
+    "count": 1
+  },
+  {
+    "name": "Anti-Rabies",
+    "slug": "anti-rabies",
+    "count": 1
+  },
+  {
+    "name": "Anti-retroviral",
+    "slug": "anti-retroviral",
+    "count": 2
+  },
+  {
+    "name": "Anti-Retroviral",
+    "slug": "anti-retroviral",
+    "count": 9
+  },
+  {
+    "name": "Anti-T.B",
+    "slug": "anti-tb",
+    "count": 1
+  },
+  {
+    "name": "Anti-Thyroid",
+    "slug": "anti-thyroid",
+    "count": 13
+  },
+  {
+    "name": "Anti-viral",
+    "slug": "anti-viral",
+    "count": 1
+  },
+  {
+    "name": "Anti-Viral",
+    "slug": "anti-viral",
+    "count": 9
+  },
+  {
+    "name": "Antibiotics",
+    "slug": "antibiotics",
+    "count": 172
+  },
+  {
+    "name": "Anticoagulant",
+    "slug": "anticoagulant",
+    "count": 11
+  },
+  {
+    "name": "Antidote",
+    "slug": "antidote",
+    "count": 1
+  },
+  {
+    "name": "Antiseptic/Disinfectants",
+    "slug": "antisepticdisinfectants",
+    "count": 18
+  },
+  {
+    "name": "Ayurvedic",
+    "slug": "ayurvedic",
+    "count": 5
+  },
+  {
+    "name": "Burn Relief",
+    "slug": "burn-relief",
+    "count": 4
+  },
+  {
+    "name": "Cardiovascular System (CVS)",
+    "slug": "cardiovascular-system-cvs",
+    "count": 304
+  },
+  {
+    "name": "Central Nervous System (CNS)",
+    "slug": "central-nervous-system-cns",
+    "count": 301
+  },
+  {
+    "name": "Coagulants",
+    "slug": "coagulants",
+    "count": 8
+  },
+  {
+    "name": "Covid-19",
+    "slug": "covid-19",
+    "count": 2
+  },
+  {
+    "name": "Derma Care",
+    "slug": "derma-care",
+    "count": 25
+  },
+  {
+    "name": "Dermatology/Topical/External",
+    "slug": "dermatologytopicalexternal",
+    "count": 86
+  },
+  {
+    "name": "Diuretic",
+    "slug": "diuretic",
+    "count": 17
+  },
+  {
+    "name": "Electrolytes",
+    "slug": "electrolytes",
+    "count": 14
+  },
+  {
+    "name": "Enzyme Preparation",
+    "slug": "enzyme-preparation",
+    "count": 13
+  },
+  {
+    "name": "Erythropoiesis",
+    "slug": "erythropoiesis",
+    "count": 2
+  },
+  {
+    "name": "Footcare Cream",
+    "slug": "footcare-cream",
+    "count": 1
+  },
+  {
+    "name": "Gastrointestinal (GIT)",
+    "slug": "gastrointestinal-git",
+    "count": 119
+  },
+  {
+    "name": "Gynaecology",
+    "slug": "gynaecology",
+    "count": 35
+  },
+  {
+    "name": "Hemorrhoids & Anal fissures",
+    "slug": "hemorrhoids-anal-fissures",
+    "count": 1
+  },
+  {
+    "name": "Hemorrhoids & Anal Fissures",
+    "slug": "hemorrhoids-anal-fissures",
+    "count": 1
+  },
+  {
+    "name": "Hepato-protective",
+    "slug": "hepato-protective",
+    "count": 2
+  },
+  {
+    "name": "Hepato-Protective",
+    "slug": "hepato-protective",
+    "count": 15
+  },
+  {
+    "name": "Immunostimulator",
+    "slug": "immunostimulator",
+    "count": 1
+  },
+  {
+    "name": "Immunosuppressant",
+    "slug": "immunosuppressant",
+    "count": 14
+  },
+  {
+    "name": "Iron-Chelating Agents",
+    "slug": "iron-chelating-agents",
+    "count": 7
+  },
+  {
+    "name": "Irrigation Fluid",
+    "slug": "irrigation-fluid",
+    "count": 2
+  },
+  {
+    "name": "Mosquito Repellent",
+    "slug": "mosquito-repellent",
+    "count": 1
+  },
+  {
+    "name": "Mouth Ulcer Gel",
+    "slug": "mouth-ulcer-gel",
+    "count": 1
+  },
+  {
+    "name": "Nephrology",
+    "slug": "nephrology",
+    "count": 6
+  },
+  {
+    "name": "Nutraceuticals",
+    "slug": "nutraceuticals",
+    "count": 36
+  },
+  {
+    "name": "Oncology",
+    "slug": "oncology",
+    "count": 88
+  },
+  {
+    "name": "Opthalmic/Otic",
+    "slug": "opthalmicotic",
+    "count": 58
+  },
+  {
+    "name": "Ortho",
+    "slug": "ortho",
+    "count": 35
+  },
+  {
+    "name": "Polycystic ovary/ovarian Syndrome",
+    "slug": "polycystic-ovaryovarian-syndrome",
+    "count": 1
+  },
+  {
+    "name": "Respiratory",
+    "slug": "respiratory",
+    "count": 113
+  },
+  {
+    "name": "Smoking Cessation",
+    "slug": "smoking-cessation",
+    "count": 3
+  },
+  {
+    "name": "Steroids & Hormones",
+    "slug": "steroids-hormones",
+    "count": 22
+  },
+  {
+    "name": "Stomatologicals",
+    "slug": "stomatologicals",
+    "count": 8
+  },
+  {
+    "name": "STOMATOLOGICALS",
+    "slug": "stomatologicals",
+    "count": 1
+  },
+  {
+    "name": "Supplement/Vitamin/Mineral",
+    "slug": "supplementvitaminmineral",
+    "count": 106
+  },
+  {
+    "name": "Surgical & Medical Consumables",
+    "slug": "surgical-medical-consumables",
+    "count": 314
+  },
+  {
+    "name": "Throat Spray for Freshness",
+    "slug": "throat-spray-for-freshness",
+    "count": 1
+  },
+  {
+    "name": "Treatment of Gout",
+    "slug": "treatment-of-gout",
+    "count": 3
+  },
+  {
+    "name": "Treatment of Severe Aplastic Anemia",
+    "slug": "treatment-of-severe-aplastic-anemia",
+    "count": 2
+  },
+  {
+    "name": "Urology",
+    "slug": "urology",
+    "count": 54
+  },
+  {
+    "name": "Vaccines",
+    "slug": "vaccines",
+    "count": 3
+  },
+  {
+    "name": "Weight management",
+    "slug": "weight-management",
+    "count": 2
+  }
+]

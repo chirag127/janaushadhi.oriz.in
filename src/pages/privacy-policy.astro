@@ -1,0 +1,234 @@
+---
+// src/pages/privacy-policy.astro
+// Privacy Policy
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Privacy Policy | Janaushadhi Store';
+const description = 'Privacy Policy for Janaushadhi Store - How we collect, use, and protect your personal information.';
+---
+
+<BaseLayout title={title} description={description} url="/privacy-policy">
+  <main class="legal-page">
+    <div class="container">
+      <article class="legal-content">
+        <header class="legal-header">
+          <h1>Privacy Policy</h1>
+          <p class="last-updated">Last updated: {new Date().toLocaleDateString()}</p>
+        </header>
+
+        <section>
+          <h2>1. Introduction</h2>
+          <p>
+            Welcome to Janaushadhi Store ("we", "our", "us"). We are committed to protecting your personal
+            privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your
+            information when you visit our website janaushadhi.oriz.in or use our services.
+          </p>
+          <p>
+            Please read this privacy policy carefully. By using our website, you consent to the practices
+            described in this policy.
+          </p>
+        </section>
+
+        <section>
+          <h2>2. Information We Collect</h2>
+          <h3>2.1 Personal Information</h3>
+          <p>We may collect personal information that you voluntarily provide to us when you:</p>
+          <ul>
+            <li>Place an order (name, phone, email, address)</li>
+            <li>Create an account (email, name)</li>
+            <li>Contact us via email or contact form</li>
+            <li>Upload a prescription</li>
+          </ul>
+
+          <h3>2.2 Automatically Collected Information</h3>
+          <p>When you visit our website, we may automatically collect:</p>
+          <ul>
+            <li>IP address</li>
+            <li>Browser type and version</li>
+            <li>Pages visited and time spent</li>
+            <li>Device information</li>
+            <li>Cookies and similar tracking technologies (see Section 4)</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>3. How We Use Your Information</h2>
+          <p>We use the information we collect to:</p>
+          <ul>
+            <li>Process and fulfill your orders</li>
+            <li>Send order confirmations and updates</li>
+            <li>Respond to your inquiries and provide customer support</li>
+            <li>Improve our website and services</li>
+            <li>Send promotional communications (with your consent)</li>
+            <li>Comply with legal obligations</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>4. Cookies & Local Storage</h2>
+          <p>
+            We use cookies and local storage to enhance your browsing experience and provide certain
+            functionality, including:
+          </p>
+          <ul>
+            <li><strong>Essential:</strong> Cart functionality, authentication</li>
+            <li><strong>Preferences:</strong> Language, theme (dark/light mode)</li>
+            <li><strong>Analytics:</strong> Google Analytics, Cloudflare Analytics</li>
+          </ul>
+          <p>
+            You can control cookies through your browser settings. However, disabling essential cookies
+            may affect website functionality.
+          </p>
+        </section>
+
+        <section>
+          <h2>5. Data Storage & Security</h2>
+          <p>
+            We store your data securely using industry-standard encryption and access controls.
+            Order history is stored in Firebase Firestore (Google Cloud). We retain personal
+            information only as long as necessary to fulfill the purposes outlined in this policy.
+          </p>
+        </section>
+
+        <section>
+          <h2>6. Third-Party Services</h2>
+          <p>We use the following third-party services which may collect your data:</p>
+          <ul>
+            <li>
+              <strong>Firebase (Google)</strong> - Authentication and database storage
+            </li>
+            <li>
+              <strong>EmailJS</strong> - Order confirmation emails
+            </li>
+            <li>
+              <strong>Google Analytics</strong> - Website analytics
+            </li>
+            <li>
+              <strong>Cloudflare</strong> - CDN, security, and analytics
+            </li>
+          </ul>
+          <p>
+            These services have their own privacy policies. We encourage you to review them.
+          </p>
+        </section>
+
+        <section>
+          <h2>7. Your Rights</h2>
+          <p>You have the right to:</p>
+          <ul>
+            <li>Access your personal data</li>
+            <li>Request correction of inaccurate data</li>
+            <li>Request deletion of your data</li>
+            <li>Opt-out of marketing communications</li>
+            <li>Data portability</li>
+          </ul>
+          <p>
+            To exercise these rights, contact us at: <a href="mailto:hi@janaushadhi.oriz.in">hi@janaushadhi.oriz.in</a>
+          </p>
+        </section>
+
+        <section>
+          <h2>8. Children's Privacy</h2>
+          <p>
+            Our website is not directed at children under 18. We do not knowingly collect personal
+            information from minors. If we learn we have collected data from a child, we will
+            delete it promptly.
+          </p>
+        </section>
+
+        <section>
+          <h2>9. Changes to This Policy</h2>
+          <p>
+            We may update this privacy policy from time to time. We will notify you of any changes by
+            posting the updated policy on this page with a revised "Last updated" date.
+          </p>
+        </section>
+
+        <section>
+          <h2>10. Contact Us</h2>
+          <p>
+            If you have questions about this Privacy Policy, please contact us:
+          </p>
+          <ul>
+            <li>Email: <a href="mailto:hi@janaushadhi.oriz.in">hi@janaushadhi.oriz.in</a></li>
+            <li>Phone: <a href="tel:+917428449707">+91 74284 44970</a></li>
+            <li>Address: Plot #448, Niladri Vihar, Lane 5, Sector 5, Chandrasekharpur, Bhubaneswar, Odisha 751021</li>
+          </ul>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <style is:global>
+    .legal-page {
+      padding: var(--space-8) 0 var(--space-16);
+    }
+
+    .legal-content {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+    }
+
+    .legal-header {
+      margin-bottom: var(--space-8);
+      padding-bottom: var(--space-6);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .legal-header h1 {
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-2);
+    }
+
+    .last-updated {
+      color: var(--color-text-secondary);
+      font-size: var(--text-sm);
+    }
+
+    section {
+      margin-bottom: var(--space-8);
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-4);
+      color: var(--color-primary-600);
+    }
+
+    h3 {
+      font-size: var(--text-lg);
+      margin: var(--space-4) 0 var(--space-2);
+      color: var(--color-text-primary);
+    }
+
+    p {
+      margin-bottom: var(--space-4);
+      line-height: var(--leading-relaxed);
+      color: var(--color-text-secondary);
+    }
+
+    ul {
+      margin-bottom: var(--space-4);
+      padding-left: var(--space-6);
+    }
+
+    li {
+      margin-bottom: var(--space-2);
+      line-height: var(--leading-relaxed);
+      color: var(--color-text-secondary);
+    }
+
+    a {
+      color: var(--color-primary-600);
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</BaseLayout>

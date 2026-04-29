@@ -1,0 +1,246 @@
+---
+// src/layouts/BaseLayout.astro
+//
+// Base layout for all pages
+// Includes: SEO meta tags, Open Graph, Twitter Cards, structured data
+// Import globally across all pages
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  url?: string;
+  type?: 'website' | 'article' | 'product';
+  medicine?: Record<string, any>; // For medicine pages
+  category?: { name: string; count: number }; // For category pages
+  hideDisclaimer?: boolean;
+}
+
+const {
+  title = 'Janaushadhi Store - Chirag Singhal\'s Jan Aushadhi Kendra | 2,400+ Generic Medicines',
+  description = 'Unofficial Janaushadhi store website for Chirag Singhal\'s Jan Aushadhi Kendra, Bhubaneswar. Browse 2,400+ generic medicines, check prices, and place pickup/COD orders.',
+  image = '/og-image.png',
+  url = 'https://janaushadhi.oriz.in',
+  type = 'website',
+  medicine,
+  category,
+  hideDisclaimer = false
+} = Astro.props;
+
+// Canonical URL
+const canonicalUrl = url ? `https://janaushadhi.oriz.in${url}` : 'https://janaushadhi.oriz.in';
+
+// Store information for LocalBusiness schema
+const storeInfo = {
+  name: "Chirag Singhal's Janaushadhi Kendra",
+  address: {
+    streetAddress: "Plot #448, Niladri Vihar, Lane 5, Sector 5",
+    addressLocality: "Chandrasekharpur",
+    addressRegion: "Bhubaneswar",
+    postalCode: "751021",
+    addressCountry: "IN"
+  },
+  telephone: "+91-7428449707",
+  email: "hi@janaushadhi.oriz.in",
+  openingHours: "Mo-Su 00:00-23:59",
+  priceRange: "₹",
+  servesCuisine: "Medicines",
+  image: "https://janaushadhi.oriz.in/og-image.png"
+};
+
+// Generate structured data based on page type
+function generateStructuredData() {
+  const baseOrg = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": storeInfo.name,
+    "url": "https://janaushadhi.oriz.in",
+    "logo": "https://janaushadhi.oriz.in/favicon.svg",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": storeInfo.telephone,
+      "contactType": "customer service",
+      "availableLanguage": ["English", "Hindi", "Odia"]
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": storeInfo.address.streetAddress,
+      "addressLocality": storeInfo.address.addressLocality,
+      "addressRegion": storeInfo.address.addressRegion,
+      "postalCode": storeInfo.address.postalCode,
+      "addressCountry": "IN"
+    },
+    "sameAs": [
+      // Add social media links here if available
+    ]
+  };
+
+  if (type === 'product' && medicine) {
+    // Product schema for individual medicine pages
+    return {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": medicine.genericName,
+      "description": `${medicine.genericName} - ${medicine.unitSize}`,
+      "sku": medicine.drugCode,
+      "image": `https://janaushadhi.oriz.in/medicines/${medicine.slug}/image`,
+      "brand": {
+        "@type": "Brand",
+        "name": "Janaushadhi"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": medicine.mrp === 0 ? "0.00" : medicine.mrp.toFixed(2),
+        "priceCurrency": "INR",
+        "availability": medicine.mrp === 0
+          ? "https://schema.org/PreOrder"
+          : "https://schema.org/InStock",
+        "priceValidUntil": new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+        "seller": {
+          "@type": "Organization",
+          "name": storeInfo.name
+        }
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.5", // Placeholder - could be from reviews
+        "reviewCount": "127", // Placeholder
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+    };
+  }
+
+  if (type === 'article' || Astro.url.pathname.includes('/medicines/')) {
+    // Article schema for blog/guide pages (if any)
+    return baseOrg;
+  }
+
+  // Default: LocalBusiness + Website
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      baseOrg,
+      {
+        "@type": "LocalBusiness",
+        "@id": "https://janaushadhi.oriz.in/#localbusiness",
+        "name": storeInfo.name,
+        "image": storeInfo.image,
+        "telephone": storeInfo.telephone,
+        "email": storeInfo.email,
+        "address": storeInfo.address,
+        "openingHoursSpecification": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+          "opens": "00:00",
+          "closes": "23:59"
+        },
+        "priceRange": "₹"
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://janaushadhi.oriz.in/#website",
+        "url": "https://janaushadhi.oriz.in",
+        "name": "Janaushadhi Store",
+        "publisher": {
+          "@id": "https://janaushadhi.oriz.in/#organization"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://janaushadhi.oriz.in/search?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      }
+    ]
+  };
+}
+---
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Primary Meta Tags -->
+  <title>{title} | Janaushadhi Store</title>
+  <meta name="title" content={title} />
+  <meta name="description" content={description} />
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href={canonicalUrl} />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content={type} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={image} />
+  <meta property="og:site_name" content="Janaushadhi Store" />
+  <meta property="og:locale" content="en_IN" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content={canonicalUrl} />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={image} />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Theme color for mobile browsers -->
+  <meta name="theme-color" content="#1a5276" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0f1923" media="(prefers-color-scheme: dark)" />
+
+  <!-- Google AdSense (placeholder - replace with actual client ID) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script> -->
+
+  <!-- Google Analytics 4 (placeholder - add measurement ID in production) -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXX"></script> -->
+
+  <!-- Preconnect to external resources -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Google Fonts: DM Serif Display, Source Sans 3, JetBrains Mono -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:wght@400;700&family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json" set:html={JSON.stringify(generateStructuredData())} />
+</head>
+
+<body>
+  <slot />
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    import { registerSW } from 'virtual:pwa-register';
+    registerSW({
+      immediate: true,
+      onRegisteredSW(swScriptUrl) {
+        console.log('SW registered: ', swScriptUrl);
+      },
+      onOfflineReady() {
+        console.log('PWA application ready to work offline');
+      },
+    });
+  </script>
+
+  <!-- Analytics (to be configured with real IDs) -->
+  <script is:inline>
+    // Google Analytics 4 placeholder
+    // window.dataLayer = window.dataLayer || [];
+    // function gtag(){dataLayer.push(arguments);}
+    // gtag('js', new Date());
+    // gtag('config', 'G-XXXXXXX');
+  </script>
+</body>
+</html>

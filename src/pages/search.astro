@@ -1,0 +1,150 @@
+---
+// src/pages/search.astro
+//
+// Search results page with Fuse.js client-side search
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MedicineCard from '../components/MedicineCard.astro';
+import { searchMedicines } from '../lib/search';
+
+const query = Astro.url.searchParams.get('q') || '';
+
+const title = query ? `Search results for "${query}" | Janaushadhi Store` : 'Search Medicines | Janaushadhi Store';
+const description = query
+  ? `Find ${query} and related generic medicines at Janaushadhi Store.`
+  : 'Search 2,400+ generic medicines by name, drug code, or category.';
+
+const results = query.length >= 2 ? searchMedicines(query, 50) : [];
+---
+
+<BaseLayout title={title} description={description} url={`/search?q=${query}`}>
+  <main class="search-page">
+    <div class="container">
+      <header class="page-header">
+        <h1>Search Results</h1>
+        {query && (
+          <p class="lead">
+            {results.length} result{results.length !== 1 ? 's' : ''} for "{query}"
+          </p>
+        )}
+      </header>
+
+      {query.length < 2 && query.length > 0 ? (
+        <div class="search-help">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <h2>Enter at least 2 characters</h2>
+          <p>Try searching by medicine name, drug code, or category.</p>
+          <a href="/medicines" class="btn btn-primary">Browse All Medicines</a>
+        </div>
+      ) : results.length > 0 ? (
+        <div class="search-results">
+          <div class="medicine-grid">
+            {results.slice(0, 24).map(medicine => (
+              <MedicineCard medicine={medicine} key={medicine.id} />
+            ))}
+          </div>
+
+          {results.length > 24 && (
+            <div class="more-results">
+              <p>Showing 24 of {results.length} results</p>
+              <a href={`/medicines?q=${encodeURIComponent(query)}`} class="btn btn-outline">
+                View all {results.length} results with filters
+              </a>
+            </div>
+          )}
+        </div>
+      ) : query ? (
+        <div class="no-results">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <h2>No results found</h2>
+          <p>We couldn't find any medicines matching "{query}"</p>
+          <div class="suggestions">
+            <p>Try:</p>
+            <ul>
+              <li>Checking your spelling</li>
+              <li>Using more general terms</li>
+              <li>Searching by drug code (e.g., "768")</li>
+            </ul>
+          </div>
+          <a href="/medicines" class="btn btn-primary">Browse All Medicines</a>
+        </div>
+      ) : (
+        <div class="empty-search">
+          <h2>Start searching</h2>
+          <p>Enter a medicine name, drug code, or category in the search box above.</p>
+          <a href="/medicines" class="btn btn-primary">Browse Medicines</a>
+        </div>
+      )}
+    </div>
+  </main>
+
+  <style is:global>
+    .search-page {
+      padding: var(--space-8) 0 var(--space-16);
+    }
+
+    .search-help,
+    .no-results,
+    .empty-search {
+      text-align: center;
+      padding: var(--space-16) var(--space-4);
+      max-width: 600px;
+      margin: 0 auto;
+      color: var(--color-text-secondary);
+    }
+
+    .search-help svg,
+    .no-results svg,
+    .empty-search svg {
+      margin-bottom: var(--space-6);
+      opacity: 0.5;
+    }
+
+    .search-help h2,
+    .no-results h2,
+    .empty-search h2 {
+      font-size: var(--text-2xl);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .suggestions {
+      text-align: left;
+      margin: var(--space-6) auto;
+      max-width: 300px;
+    }
+
+    .suggestions ul {
+      list-style: disc;
+      padding-left: var(--space-6);
+    }
+
+    .suggestions li {
+      margin-bottom: var(--space-2);
+    }
+
+    .medicine-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: var(--space-6);
+    }
+
+    .more-results {
+      text-align: center;
+      margin-top: var(--space-8);
+      padding-top: var(--space-8);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .more-results p {
+      margin-bottom: var(--space-4);
+      color: var(--color-text-secondary);
+    }
+  </style>
+</BaseLayout>

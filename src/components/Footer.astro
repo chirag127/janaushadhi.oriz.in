@@ -1,0 +1,290 @@
+---
+// src/components/Footer.astro
+//
+// Site footer with store info, legal links, copyright
+---
+
+<footer class="site-footer">
+  <div class="footer-container">
+    <!-- Store Info -->
+    <div class="footer-section store-info">
+      <div class="footer-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L12 22M12 2C14.5 5 16 8 16 12C16 15 14 18 12 22M12 2C9.5 5 8 8 8 12C8 15 10 18 12 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Janaushadhi Store</span>
+      </div>
+      <p class="store-description">
+        Chirag Singhal's Jan Aushadhi Kendra<br>
+        Plot #448, Niladri Vihar, Lane 5, Sector 5<br>
+        Chandrasekharpur, Bhubaneswar, Odisha - 751021
+      </p>
+      <div class="contact-details">
+        <a href="tel:+917428449707" class="contact-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          +91 74284 44970
+        </a>
+        <a href="mailto:hi@janaushadhi.oriz.in" class="contact-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          hi@janaushadhi.oriz.in
+        </a>
+      </div>
+      <p class="store-hours">
+        <strong>Hours:</strong> 24/7 (All days)
+      </p>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="footer-section">
+      <h3 class="footer-heading">Quick Links</h3>
+      <ul class="footer-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/medicines">All Medicines</a></li>
+        <li><a href="/categories">Categories</a></li>
+        <li><a href="/search">Search</a></li>
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </div>
+
+    <!-- Customer Service -->
+    <div class="footer-section">
+      <h3 class="footer-heading">Customer Service</h3>
+      <ul class="footer-links">
+        <li><a href="/orders">Order History</a></li>
+        <li><a href="/cart">Shopping Cart</a></li>
+        <li><a href="/faq">FAQs</a></li>
+        <li><a href="/shipping">Shipping Info</a></li>
+        <li><a href="/returns">Returns & Refunds</a></li>
+      </ul>
+    </div>
+
+    <!-- Legal -->
+    <div class="footer-section">
+      <h3 class="footer-heading">Legal</h3>
+      <ul class="footer-links">
+        <li><a href="/privacy-policy">Privacy Policy</a></li>
+        <li><a href="/terms-of-service">Terms of Service</a></li>
+        <li><a href="/disclaimer">Disclaimer</a></li>
+        <li><a href="/cookie-policy">Cookie Policy</a></li>
+        <li><a href="/refund-policy">Refund Policy</a></li>
+      </ul>
+    </div>
+
+    <!-- Official Link -->
+    <div class="footer-section official-link">
+      <h3 class="footer-heading">Official</h3>
+      <p>For official Janaushadhi information:</p>
+      <a href="https://janaushadhi.gov.in" target="_blank" rel="noopener noreferrer" class="official-btn">
+        Visit janaushadhi.gov.in
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="footer-bottom">
+    <div class="footer-bottom-container">
+      <div class="copyright">
+        <p>© {new Date().getFullYear()} Chirag Singhal. All rights reserved.</p>
+        <p class="unofficial-note">
+          <strong>Unofficial Store:</strong> This website is not affiliated with the Government of India or BPPI.
+        </p>
+      </div>
+      <div class="footer-badges">
+        <span class="badge">Made in India 🇮🇳</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style is:global>
+  .site-footer {
+    background-color: var(--color-grey-900);
+    color: var(--color-grey-300);
+    padding-top: var(--space-12);
+    margin-top: var(--space-16);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .site-footer {
+      background-color: var(--color-bg-inverse);
+    }
+  }
+
+  .footer-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--space-4);
+  }
+
+  @media (min-width: 640px) {
+    .footer-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .footer-container {
+      grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+    }
+  }
+
+  .footer-section {
+    padding: var(--space-4) 0;
+  }
+
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    color: white;
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+  }
+
+  .store-description {
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+    margin-bottom: var(--space-4);
+    color: var(--color-grey-400);
+  }
+
+  .contact-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-grey-300);
+    font-size: var(--text-sm);
+    transition: color var(--duration-fast);
+  }
+
+  .contact-link:hover {
+    color: var(--color-primary-300);
+  }
+
+  .store-hours {
+    font-size: var(--text-sm);
+    color: var(--color-grey-400);
+  }
+
+  .footer-heading {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    margin-bottom: var(--space-4);
+  }
+
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .footer-links a {
+    color: var(--color-grey-400);
+    font-size: var(--text-sm);
+    transition: color var(--duration-fast);
+  }
+
+  .footer-links a:hover {
+    color: white;
+  }
+
+  .official-link p {
+    font-size: var(--text-sm);
+    color: var(--color-grey-400);
+    margin-bottom: var(--space-2);
+  }
+
+  .official-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--color-primary-600);
+    color: white;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    border-radius: var(--radius-md);
+    transition: background-color var(--duration-fast);
+  }
+
+  .official-btn:hover {
+    background-color: var(--color-primary-500);
+    color: white;
+  }
+
+  /* Bottom bar */
+  .footer-bottom {
+    margin-top: var(--space-12);
+    padding: var(--space-6) 0;
+    border-top: 1px solid var(--color-grey-800);
+  }
+
+  .footer-bottom-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .footer-bottom-container {
+      flex-direction: row;
+    }
+  }
+
+  .copyright {
+    text-align: center;
+  }
+
+  .copyright p {
+    font-size: var(--text-sm);
+    color: var(--color-grey-500);
+    margin-bottom: var(--space-1);
+  }
+
+  .unofficial-note {
+    font-size: var(--text-xs);
+    color: var(--color-grey-600);
+  }
+
+  .footer-badges .badge {
+    display: inline-block;
+    padding: var(--space-1) var(--space-2);
+    background-color: var(--color-grey-800);
+    color: var(--color-grey-300);
+    font-size: var(--text-xs);
+    border-radius: var(--radius-md);
+  }
+}
+</style>

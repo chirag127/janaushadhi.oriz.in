@@ -1,0 +1,208 @@
+---
+// src/pages/categories/[slug].astro
+//
+// Category page showing all medicines in a specific category
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MedicineCard from '../../components/MedicineCard.astro';
+import { medicines, categories } from '../../data';
+
+// Generate all possible paths at build time
+export function getStaticPaths() {
+  return categories.map(category => ({
+    params: { slug: category.slug },
+    props: {}
+  }));
+}
+
+const { slug } = Astro.params;
+
+// Find category by slug
+const category = categories.find(c => c.slug === slug);
+
+// Handle 404
+if (!category) {
+  return Astro.redirect('/404');
+}
+
+// Filter medicines in this category
+const categoryMedicines = medicines.filter(med => med.groupName === category.name);
+
+// Sort alphabetically by default
+categoryMedicines.sort((a, b) => a.genericName.localeCompare(b.genericName));
+
+const pageTitle = `${category.name} Medicines (${categoryMedicines.length}) | Janaushadhi Store`;
+const pageDescription = `Browse ${categoryMedicines.length} medicines in ${category.name} category at Janaushadhi Store.`;
+const pageUrl = `https://janaushadhi.oriz.in/categories/${slug}`;
+
+// Breadcrumbs
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Categories', url: '/categories' },
+  { name: category.name, url: `#` }
+];
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  url={`/categories/${slug}`}
+>
+  <!-- ItemList structured data -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": `${category.name} Medicines`,
+    "numberOfItems": categoryMedicines.length,
+    "itemListElement": categoryMedicines.slice(0, 50).map((med, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": `https://janaushadhi.oriz.in/medicines/${med.slug}`
+    }))
+  })} />
+
+  <main class="category-page">
+    <div class="container">
+      <!-- Breadcrumbs -->
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ol class="breadcrumb-list">
+          {breadcrumbs.map((crumb, index) => (
+            <li class="breadcrumb-item" key={index}>
+              <a href={crumb.url} class="breadcrumb-link">{crumb.name}</a>
+              {index < breadcrumbs.length - 1 && (
+                <svg class="breadcrumb-sep" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
+
+      <!-- Category Header -->
+      <header class="category-header">
+        <div class="category-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+        </div>
+        <div class="category-info">
+          <h1>{category.name}</h1>
+          <p class="lead">{categoryMedicines.length} medicines in this category</p>
+        </div>
+      </header>
+
+      <!-- Medicines Grid -->
+      {categoryMedicines.length > 0 ? (
+        <div class="medicine-grid">
+          {categoryMedicines.map(medicine => (
+            <MedicineCard medicine={medicine} key={medicine.id} />
+          ))}
+        </div>
+      ) : (
+        <div class="no-medicines">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <h3>No medicines found</h3>
+          <p>This category is currently empty or coming soon.</p>
+          <a href="/medicines" class="btn btn-primary">Browse all medicines</a>
+        </div>
+      )}
+
+      <!-- Back link -->
+      <div class="back-to-categories">
+        <a href="/categories">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"/>
+            <polyline points="12 19 5 12 12 5"/>
+          </svg>
+          Back to all categories
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <style is:global>
+    .category-page {
+      padding: var(--space-8) 0 var(--space-16);
+    }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+      margin-bottom: var(--space-10);
+      padding-bottom: var(--space-6);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .category-icon {
+      flex-shrink: 0;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--color-primary-100), var(--color-primary-200));
+      border-radius: var(--radius-xl);
+      color: var(--color-primary-600);
+    }
+
+    [data-theme="dark"] .category-icon {
+      background: linear-gradient(135deg, var(--color-primary-900), var(--color-primary-800));
+      color: var(--color-primary-300);
+    }
+
+    .category-info h1 {
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-2);
+    }
+
+    .medicine-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: var(--space-6);
+      margin-bottom: var(--space-12);
+    }
+
+    .no-medicines {
+      text-align: center;
+      padding: var(--space-16) var(--space-4);
+      color: var(--color-text-secondary);
+    }
+
+    .no-medicines svg {
+      margin-bottom: var(--space-4);
+      opacity: 0.5;
+    }
+
+    .no-medicines h3 {
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-2);
+    }
+
+    .no-medicines p {
+      margin-bottom: var(--space-6);
+    }
+
+    .back-to-categories {
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .back-to-categories a {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-primary-600);
+    }
+
+    .back-to-categories a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</BaseLayout>

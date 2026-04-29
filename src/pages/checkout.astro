@@ -1,0 +1,744 @@
+---
+// src/pages/checkout.astro
+//
+// Checkout page with order form and EmailJS integration
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCart, clearCart } from '../lib/cart';
+
+const title = 'Checkout | Place Order | Janaushadhi Store';
+const description = 'Complete your order. Pickup or Cash on Delivery available at Janaushadhi Store, Bhubaneswar.';
+
+const cartItems = getCart();
+
+// Redirect if cart is empty
+if (cartItems.length === 0) {
+  return Astro.redirect('/cart');
+}
+---
+
+<BaseLayout title={title} description={description} url="/checkout" hideDisclaimer>
+  <main class="checkout-page">
+    <div class="container">
+      <header class="page-header">
+        <h1>Checkout</h1>
+        <p class="lead">Complete your order</p>
+      </header>
+
+      <div class="checkout-layout">
+        <!-- Order Form -->
+        <div class="checkout-form-section">
+          <form id="order-form" class="checkout-form">
+            <!-- Customer Details -->
+            <section class="form-section">
+              <h2>Contact Information</h2>
+
+              <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  placeholder="Enter your full name"
+                />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="phone">Phone Number *</label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    required
+                    placeholder="+91 98765 43210"
+                    pattern="^[+]?[0-9]{10,15}$"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="email">Email Address *</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    placeholder="your@email.com"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <!-- Delivery Address -->
+            <section class="form-section">
+              <h2>Delivery / Pickup Address</h2>
+
+              <div class="form-group">
+                <label for="address">Full Address *</label>
+                <textarea
+                  id="address"
+                  name="address"
+                  required
+                  rows="3"
+                  placeholder="House/Flat No., Street, Landmark, Area..."
+                ></textarea>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="city">City *</label>
+                  <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    required
+                    value="Bhubaneswar"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="pincode">PIN Code *</label>
+                  <input
+                    type="text"
+                    id="pincode"
+                    name="pincode"
+                    required
+                    placeholder="751021"
+                    pattern="[0-9]{6}"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <!-- Order Type -->
+            <section class="form-section">
+              <h2>Order Type</h2>
+
+              <div class="order-type-options">
+                <label class="radio-option">
+                  <input type="radio" name="orderType" value="pickup" checked />
+                  <div class="radio-content">
+                    <span class="radio-title">Store Pickup</span>
+                    <span class="radio-desc">Collect from our store at your convenience</span>
+                  </div>
+                </label>
+
+                <label class="radio-option">
+                  <input type="radio" name="orderType" value="cod" />
+                  <div class="radio-content">
+                    <span class="radio-title">Cash on Delivery</span>
+                    <span class="radio-desc">Pay when we deliver to your address</span>
+                  </div>
+                </label>
+              </div>
+            </section>
+
+            <!-- Prescription Upload -->
+            <section class="form-section">
+              <h2>Prescription (Optional)</h2>
+              <p class="section-desc">If you have a prescription, upload it for faster processing</p>
+
+              <div class="prescription-upload-area">
+                <input
+                  type="file"
+                  id="prescription"
+                  name="prescription"
+                  accept="image/*"
+                  class="file-input"
+                />
+                <label for="prescription" class="upload-area">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  <span>Click to upload prescription image</span>
+                  <small>PNG, JPG up to 5MB</small>
+                </label>
+                <div class="file-preview" id="file-preview"></div>
+              </div>
+            </section>
+
+            <!-- Order Notes -->
+            <section class="form-section">
+              <label for="notes">Order Notes (Optional)</label>
+              <textarea
+                id="notes"
+                name="notes"
+                rows="3"
+                placeholder="Any special instructions or notes..."
+              ></textarea>
+            </section>
+
+            <!-- Submit -->
+            <button type="submit" class="btn btn-primary btn-lg btn-block" id="submit-btn">
+              <span id="btn-text">Place Order</span>
+              <span id="btn-loading" class="hidden">
+                <svg class="spinner" width="20" height="20" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="31.4 31.4" stroke-linecap="round"/>
+                </svg>
+                Processing...
+              </span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Order Summary Sidebar -->
+        <aside class="order-summary-section">
+          <div class="summary-card">
+            <h2>Order Summary</h2>
+
+            <div class="order-items">
+              {cartItems.slice(0, 5).map(item => (
+                <div class="summary-item" key={item.slug}>
+                  <div class="item-info">
+                    <span class="item-name">{item.medicine?.genericName || item.slug}</span>
+                    <span class="item-qty">Qty: {item.quantity}</span>
+                  </div>
+                  <span class="item-price">
+                    {item.medicine?.isPriceOnRequest ? 'POR' : `₹${(item.medicine?.mrp || 0 * item.quantity).toFixed(2)}`}
+                  </span>
+                </div>
+              ))}
+              {cartItems.length > 5 && (
+                <div class="more-items">
+                  + {cartItems.length - 5} more items
+                </div>
+              )}
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span>₹{subtotal.toFixed(2)}</span>
+            </div>
+            <div class="summary-row">
+              <span>Delivery/Pickup</span>
+              <span>Free</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-row total">
+              <span>Total</span>
+              <span>₹{total.toFixed(2)}</span>
+            </div>
+
+            <div class="store-info">
+              <h3>Store Details</h3>
+              <p>
+                <strong>Chirag Singhal's Jan Aushadhi Kendra</strong><br/>
+                Plot #448, Niladri Vihar, Lane 5, Sector 5<br/>
+                Chandrasekharpur, Bhubaneswar - 751021<br/>
+                <a href="tel:+917428449707">+91 74284 44970</a><br/>
+                <a href="mailto:hi@janaushadhi.oriz.in">hi@janaushadhi.oriz.in</a><br/>
+                24/7 Service
+              </p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <!-- Order Confirmation Modal (hidden by default) -->
+  <div class="modal-overlay" id="confirmation-modal">
+    <div class="modal-content">
+      <div class="modal-icon success">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h2>Order Placed Successfully!</h2>
+      <p>Thank you for your order.</p>
+      <p class="order-id">Order ID: <strong id="order-id-display"></strong></p>
+      <p class="modal-note">You will receive a confirmation email shortly.</p>
+      <div class="modal-actions">
+        <a href="/orders" class="btn btn-primary">View Orders</a>
+        <a href="/" class="btn btn-outline">Return Home</a>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    // File preview
+    document.querySelector('.file-input')?.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const preview = document.getElementById('file-preview');
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.innerHTML = `
+            <img src="${e.target.result}" alt="Prescription preview" />
+            <button type="button" onclick="clearFile()">×</button>
+          `;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function clearFile() {
+      document.getElementById('prescription').value = '';
+      document.getElementById('file-preview').innerHTML = '';
+    }
+
+    // Form submission via EmailJS
+    document.getElementById('order-form')?.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const submitBtn = document.getElementById('submit-btn');
+      const btnText = document.getElementById('btn-text');
+      const btnLoading = document.getElementById('btn-loading');
+
+      // Show loading
+      submitBtn.disabled = true;
+      btnText.classList.add('hidden');
+      btnLoading.classList.remove('hidden');
+
+      try {
+        // Get prescription data
+        const prescriptionInput = document.getElementById('prescription');
+        let prescriptionData = '';
+
+        if (prescriptionInput.files[0]) {
+          const reader = new FileReader();
+          prescriptionData = await new Promise((resolve) => {
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(prescriptionInput.files[0]);
+          });
+        }
+
+        // Prepare order data
+        const orderData = {
+          name: form.name.value,
+          phone: form.phone.value,
+          email: form.email.value,
+          address: form.address.value,
+          city: form.city.value,
+          pincode: form.pincode.value,
+          orderType: form.orderType.value,
+          notes: form.notes.value,
+          prescription: prescriptionData,
+          items: JSON.parse(localStorage.getItem('janaushadhi-cart') || '[]'),
+          orderId: 'JHS-' + Date.now().toString(36).toUpperCase(),
+          orderDate: new Date().toISOString()
+        };
+
+        // Send via EmailJS
+        const response = await emailjs.send(
+          import.meta.env.EMAILJS_SERVICE_ID,
+          import.meta.env.EMAILJS_TEMPLATE_ID,
+          {
+            order_id: orderData.orderId,
+            customer_name: orderData.name,
+            customer_phone: orderData.phone,
+            customer_email: orderData.email,
+            delivery_address: orderData.address + ', ' + orderData.city + ' - ' + orderData.pincode,
+            order_type: orderData.orderType === 'pickup' ? 'Store Pickup' : 'Cash on Delivery',
+            order_notes: orderData.notes || 'None',
+            items: orderData.items.map(item =>
+              `${item.medicine?.genericName || item.slug} (${item.quantity}x)`
+            ).join('\n'),
+            total_amount: `₹${subtotal.toFixed(2)}`
+          },
+          import.meta.env.EMAILJS_PUBLIC_KEY
+        );
+
+        if (response.status === 200) {
+          // Save order to Firestore (optional - requires auth)
+          // await saveOrderToFirestore(orderData);
+
+          // Clear cart
+          clearCart();
+
+          // Show confirmation modal
+          document.getElementById('order-id-display').textContent = orderData.orderId;
+          document.getElementById('confirmation-modal').classList.add('active');
+        } else {
+          throw new Error('Failed to send');
+        }
+      } catch (error) {
+        console.error('Order submission error:', error);
+        alert('Failed to place order. Please try again or call us directly.');
+      } finally {
+        submitBtn.disabled = false;
+        btnText.classList.remove('hidden');
+        btnLoading.classList.add('hidden');
+      }
+    });
+
+    // Close modal
+    document.getElementById('confirmation-modal')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.remove('active');
+      }
+    });
+  </script>
+
+  <style is:global>
+    .checkout-page {
+      padding: var(--space-8) 0 var(--space-16);
+    }
+
+    .checkout-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+
+    @media (min-width: 1024px) {
+      .checkout-layout {
+        grid-template-columns: 1fr 400px;
+      }
+    }
+
+    /* Form */
+    .checkout-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+
+    .form-section {
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+    }
+
+    .form-section h2 {
+      font-size: var(--text-lg);
+      margin-bottom: var(--space-4);
+    }
+
+    .section-desc {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+
+    @media (max-width: 640px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      margin-bottom: var(--space-2);
+      color: var(--color-text-primary);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea {
+      width: 100%;
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-base);
+      background-color: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      transition: border-color var(--duration-fast);
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--color-primary-500);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Order Type Options */
+    .order-type-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+
+    .radio-option {
+      cursor: pointer;
+    }
+
+    .radio-option input[type="radio"] {
+      display: none;
+    }
+
+    .radio-content {
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-4);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      transition: all var(--duration-fast);
+    }
+
+    .radio-option input:checked + .radio-content {
+      border-color: var(--color-primary-500);
+      background-color: var(--color-primary-50);
+    }
+
+    .radio-title {
+      font-weight: var(--font-semibold);
+      margin-bottom: var(--space-1);
+    }
+
+    .radio-desc {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    /* Prescription Upload */
+    .prescription-upload-area {
+      position: relative;
+    }
+
+    .file-input {
+      position: absolute;
+      width: 0;
+      height: 0;
+      opacity: 0;
+    }
+
+    .upload-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-8);
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-xl);
+      cursor: pointer;
+      transition: all var(--duration-fast);
+    }
+
+    .upload-area:hover {
+      border-color: var(--color-primary-400);
+      background-color: var(--color-primary-50);
+    }
+
+    .upload-area svg {
+      color: var(--color-text-tertiary);
+    }
+
+    .upload-area span {
+      font-weight: var(--font-medium);
+      color: var(--color-text-primary);
+    }
+
+    .upload-area small {
+      font-size: var(--text-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    .file-preview {
+      margin-top: var(--space-4);
+    }
+
+    .file-preview img {
+      max-width: 200px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+    }
+
+    .file-preview button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      margin-top: var(--space-2);
+      background-color: var(--color-error);
+      color: white;
+      border-radius: var(--radius-full);
+      font-size: var(--text-lg);
+    }
+
+    /* Summary Card */
+    .summary-card {
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      position: sticky;
+      top: calc(var(--header-height) + var(--space-6));
+    }
+
+    .summary-card h2 {
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-4);
+    }
+
+    .order-items {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-2) 0;
+      border-bottom: 1px solid var(--color-border);
+      font-size: var(--text-sm);
+    }
+
+    .item-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .item-name {
+      font-weight: var(--font-medium);
+    }
+
+    .item-qty {
+      font-size: var(--text-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    .item-price {
+      font-family: var(--font-mono);
+      white-space: nowrap;
+    }
+
+    .more-items {
+      font-size: var(--text-sm);
+      color: var(--color-text-tertiary);
+      text-align: center;
+      padding: var(--space-2);
+    }
+
+    .summary-divider {
+      height: 1px;
+      background-color: var(--color-border);
+      margin: var(--space-4) 0;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: var(--space-2);
+    }
+
+    .summary-row.total {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      margin-top: var(--space-4);
+    }
+
+    .store-info {
+      margin-top: var(--space-6);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-border);
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .store-info h3 {
+      font-size: var(--text-base);
+      margin-bottom: var(--space-2);
+    }
+
+    .store-info a {
+      color: var(--color-primary-600);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: var(--z-modal);
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background-color: var(--color-bg-primary);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .modal-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto var(--space-6);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-icon.success {
+      background-color: var(--color-success-light);
+      color: var(--color-success);
+    }
+
+    .modal-content h2 {
+      margin-bottom: var(--space-2);
+    }
+
+    .order-id {
+      font-size: var(--text-lg);
+      margin: var(--space-4) 0;
+    }
+
+    .modal-note {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: var(--space-3);
+      justify-content: center;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</BaseLayout>

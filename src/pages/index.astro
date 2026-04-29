@@ -1,0 +1,655 @@
+---
+// src/pages/index.astro
+//
+// Homepage with hero, search, featured categories, and store info
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MedicineCard from '../components/MedicineCard.astro';
+import { medicines, categories } from '../data';
+
+const title = 'Janaushadhi Store - Chirag Singhal\'s Jan Aushadhi Kendra';
+const description = 'Browse 2,400+ generic medicines. Chirag Singhal\'s Jan Aushadhi Kendra in Bhubaneswar - 24/7 service, pickup & COD available.';
+
+// Get top 10 categories by count
+const featuredCategories = categories
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 10);
+
+// Get some sample medicines for "Popular Medicines" section
+const someMedicines = medicines.slice(0, 12);
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="homepage">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-background">
+        <div class="hero-pattern"></div>
+      </div>
+
+      <div class="hero-content container">
+        <div class="hero-text">
+          <h1 class="hero-title">
+            <span class="hero-subtitle">Janaushadhi Store</span>
+            <span class="hero-headline">Generic Medicines<br/>Affordable Healthcare</span>
+          </h1>
+
+          <p class="hero-description lead">
+            Chirag Singhal's Jan Aushadhi Kendra, Bhubaneswar<br/>
+            24/7 Service • Pickup & COD • 2,400+ Medicines
+          </p>
+
+          <!-- Search Box -->
+          <div class="hero-search">
+            <a href="/search" class="search-trigger">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+              </svg>
+              <span>Search medicines by name, code, or category...</span>
+            </a>
+            <a href="/medicines" class="btn btn-primary">
+              Browse All Medicines
+            </a>
+          </div>
+
+          <!-- Quick Stats -->
+          <div class="hero-stats">
+            <div class="stat-item">
+              <span class="stat-number">{medicines.length.toLocaleString()}+</span>
+              <span class="stat-label">Medicines</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{categories.length}</span>
+              <span class="stat-label">Categories</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">24/7</span>
+              <span class="stat-label">Service</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Image/Illustration -->
+        <div class="hero-visual">
+          <div class="medicine-bottle">
+            <svg width="120" height="200" viewBox="0 0 120 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="40" y="20" width="40" height="160" rx="8" fill="var(--color-primary-500)"/>
+              <rect x="45" y="60" width="30" height="20" fill="white" opacity="0.3"/>
+              <rect x="45" y="90" width="30" height="20" fill="white" opacity="0.3"/>
+              <rect x="45" y="120" width="30" height="20" fill="white" opacity="0.3"/>
+              <rect x="30" y="180" width="60" height="10" rx="3" fill="var(--color-primary-700)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Categories -->
+    <section class="featured-categories section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Browse by Category</h2>
+          <a href="/categories" class="view-all-link">View all categories →</a>
+        </div>
+
+        <div class="category-grid">
+          {featuredCategories.map(category => (
+            <a
+              href={`/categories/${category.slug}`}
+              class="category-card"
+              key={category.slug}
+            >
+              <span class="category-name">{category.name}</span>
+              <span class="category-count">{category.count} medicines</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Price on Request Notice -->
+    <section class="price-notice section">
+      <div class="container">
+        <div class="notice-card">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <div class="notice-content">
+            <h3>Price on Request</h3>
+            <p>
+              Some medicines show "Price on Request". These are either high-cost items,
+              special order medicines, or items with fluctuating prices.
+              <strong>Contact us directly</strong> for current pricing.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Popular Medicines -->
+    <section class="popular-medicines section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Popular Medicines</h2>
+          <a href="/medicines" class="view-all-link">View all medicines →</a>
+        </div>
+
+        <div class="medicine-grid">
+          {someMedicines.map(medicine => (
+            <MedicineCard medicine={medicine} key={medicine.id} />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Store Info Card -->
+    <section class="store-info section">
+      <div class="container">
+        <div class="info-grid">
+          <!-- Address -->
+          <div class="info-card">
+            <div class="info-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <div class="info-content">
+              <h3>Visit Us</h3>
+              <p>
+                Plot #448, Niladri Vihar, Lane 5, Sector 5<br/>
+                Chandrasekharpur, Bhubaneswar<br/>
+                Odisha - 751021
+              </p>
+              <a href="https://maps.google.com" target="_blank" class="info-link">
+                Get directions
+              </a>
+            </div>
+          </div>
+
+          <!-- Contact -->
+          <div class="info-card">
+            <div class="info-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <div class="info-content">
+              <h3>Call Us</h3>
+              <p>
+                <a href="tel:+917428449707">+91 74284 44970</a><br/>
+                Available 24/7
+              </p>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="info-card">
+            <div class="info-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </div>
+            <div class="info-content">
+              <h3>Email Us</h3>
+              <p>
+                <a href="mailto:hi@janaushadhi.oriz.in">hi@janaushadhi.oriz.in</a><br/>
+                Quick response guaranteed
+              </p>
+            </div>
+          </div>
+
+          <!-- Hours -->
+          <div class="info-card">
+            <div class="info-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div class="info-content">
+              <h3>Open 24/7</h3>
+              <p>
+                We are open all days<br/>
+                Midnight to midnight
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta section">
+      <div class="container">
+        <div class="cta-box">
+          <h2>Ready to order?</h2>
+          <p>Browse our catalogue and add medicines to your cart. Pickup or Cash on Delivery available.</p>
+          <div class="cta-buttons">
+            <a href="/medicines" class="btn btn-primary btn-lg">Start Shopping</a>
+            <a href="/contact" class="btn btn-outline btn-lg">Contact Us</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .homepage {
+    min-height: 100vh;
+  }
+
+  /* Sections */
+  .section {
+    padding: var(--space-12) 0;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-8);
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .section-header h2 {
+    font-size: var(--text-2xl);
+    color: var(--color-text-primary);
+  }
+
+  .view-all-link {
+    color: var(--color-primary-600);
+    font-weight: var(--font-medium);
+    transition: color var(--duration-fast);
+  }
+
+  .view-all-link:hover {
+    color: var(--color-primary-700);
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .hero-background {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-grey-100) 100%);
+    z-index: -1;
+  }
+
+  [data-theme="dark"] .hero-background {
+    background: linear-gradient(135deg, var(--color-primary-900) 0%, var(--color-grey-800) 100%);
+  }
+
+  .hero-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.1;
+    background-image: radial-gradient(circle at 1px 1px, var(--color-primary-500) 1px, transparent 0);
+    background-size: 40px 40px;
+  }
+
+  .hero-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-12);
+    align-items: center;
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-16);
+  }
+
+  @media (min-width: 1024px) {
+    .hero-content {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-16);
+    }
+  }
+
+  .hero-text {
+    max-width: 640px;
+  }
+
+  .hero-title {
+    margin-bottom: var(--space-6);
+  }
+
+  .hero-subtitle {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--color-primary-600);
+    margin-bottom: var(--space-2);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .hero-headline {
+    font-size: var(--text-5xl);
+    line-height: 1.1;
+    color: var(--color-text-primary);
+  }
+
+  @media (min-width: 768px) {
+    .hero-headline {
+      font-size: 4rem;
+    }
+  }
+
+  .hero-description {
+    font-size: var(--text-lg);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-8);
+    max-width: 500px;
+  }
+
+  .hero-search {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+
+  @media (min-width: 640px) {
+    .hero-search {
+      flex-direction: row;
+      align-items: stretch;
+    }
+  }
+
+  .search-trigger {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex: 1;
+    padding: var(--space-4) var(--space-6);
+    background-color: var(--color-bg-primary);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    color: var(--color-text-tertiary);
+    font-size: var(--text-base);
+    transition: all var(--duration-fast);
+  }
+
+  .search-trigger:hover {
+    border-color: var(--color-primary-400);
+    color: var(--color-primary-600);
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .stat-number {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+    color: var(--color-primary-600);
+  }
+
+  .stat-label {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  /* Hero visual */
+  .hero-visual {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-8);
+  }
+
+  @media (min-width: 1024px) {
+    .hero-visual {
+      display: flex;
+    }
+  }
+
+  .medicine-bottle {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  /* Category Grid */
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .category-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-6);
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    text-align: center;
+    transition: all var(--duration-normal) var(--ease-out);
+  }
+
+  .category-card:hover {
+    border-color: var(--color-primary-300);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .category-name {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    font-weight: var(--font-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-1);
+  }
+
+  .category-count {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  /* Price Notice */
+  .notice-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background-color: var(--color-warning-light);
+    border: 1px solid var(--color-warning);
+    border-radius: var(--radius-xl);
+  }
+
+  .notice-card svg {
+    flex-shrink: 0;
+    color: var(--color-warning-dark);
+    margin-top: 2px;
+  }
+
+  .notice-content h3 {
+    font-size: var(--text-lg);
+    color: var(--color-warning-dark);
+    margin-bottom: var(--space-2);
+  }
+
+  .notice-content p {
+    font-size: var(--text-sm);
+    color: var(--color-warning-dark);
+    line-height: var(--leading-relaxed);
+    margin: 0;
+  }
+
+  [data-theme="dark"] .notice-card {
+    background-color: rgba(255, 193, 7, 0.15);
+    border-color: var(--color-warning);
+  }
+
+  [data-theme="dark"] .notice-card h3,
+  [data-theme="dark"] .notice-card p {
+    color: var(--color-warning-200);
+  }
+
+  /* Medicine Grid */
+  .medicine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-6);
+  }
+
+  /* Store Info */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .info-card {
+    display: flex;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+  }
+
+  .info-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-600);
+    border-radius: var(--radius-lg);
+  }
+
+  [data-theme="dark"] .info-icon {
+    background-color: var(--color-primary-900);
+    color: var(--color-primary-300);
+  }
+
+  .info-content h3 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-2);
+  }
+
+  .info-content p {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    margin: 0;
+  }
+
+  .info-link {
+    display: inline-block;
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-primary-600);
+  }
+
+  .info-link:hover {
+    text-decoration: underline;
+  }
+
+  /* CTA Section */
+  .cta-box {
+    text-align: center;
+    padding: var(--space-12) var(--space-6);
+    background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-700));
+    border-radius: var(--radius-2xl);
+    color: white;
+  }
+
+  .cta-box h2 {
+    font-size: var(--text-3xl);
+    color: white;
+    margin-bottom: var(--space-4);
+  }
+
+  .cta-box p {
+    font-size: var(--text-lg);
+    opacity: 0.9;
+    max-width: 500px;
+    margin: 0 auto var(--space-8);
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-lg {
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--text-base);
+    border-radius: var(--radius-lg);
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--text-base);
+    font-weight: var(--font-medium);
+    border-radius: var(--radius-lg);
+    transition: all var(--duration-fast);
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background-color: var(--color-primary-600);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-primary-500);
+    color: white;
+  }
+
+  .btn-outline {
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+  }
+
+  .btn-outline:hover {
+    background-color: white;
+    color: var(--color-primary-600);
+  }
+
+  [data-theme="dark"] .btn-outline {
+    color: white;
+    border-color: white;
+  }
+}
+</style>

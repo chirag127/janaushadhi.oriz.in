@@ -1,0 +1,124 @@
+---
+// src/pages/categories/index.astro
+//
+// All categories listing page
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { categories } from '../../data';
+
+const title = 'Medicine Categories - Browse by Health Condition | Janaushadhi Store';
+const description = `Browse ${categories.length} medicine categories. Find generic medicines by health condition or therapeutic area.`;
+
+// Sort categories by count (desc)
+const sortedCategories = [...categories].sort((a, b) => b.count - a.count);
+---
+
+<BaseLayout title={title} description={description} url="/categories">
+  <main class="categories-page">
+    <div class="container">
+      <header class="page-header">
+        <h1>Medicine Categories</h1>
+        <p class="lead">Browse medicines by therapeutic category</p>
+      </header>
+
+      <div class="categories-grid">
+        {sortedCategories.map(category => (
+          <a
+            href={`/categories/${category.slug}`}
+            class="category-card"
+            key={category.slug}
+          >
+            <div class="category-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+              </svg>
+            </div>
+            <div class="category-content">
+              <h2>{category.name}</h2>
+              <span class="medicine-count">{category.count} medicines</span>
+            </div>
+            <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+        ))}
+      </div>
+    </div>
+  </main>
+
+  <style is:global>
+    .categories-page {
+      padding: var(--space-8) 0 var(--space-16);
+    }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .category-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-6);
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      text-decoration: none;
+      transition: all var(--duration-normal) var(--ease-out);
+    }
+
+    .category-card:hover {
+      border-color: var(--color-primary-300);
+      box-shadow: var(--shadow-md);
+      transform: translateX(4px);
+    }
+
+    .category-icon {
+      flex-shrink: 0;
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--color-primary-50), var(--color-primary-100));
+      border-radius: var(--radius-lg);
+      color: var(--color-primary-600);
+    }
+
+    [data-theme="dark"] .category-icon {
+      background: linear-gradient(135deg, var(--color-primary-900), var(--color-primary-800));
+      color: var(--color-primary-300);
+    }
+
+    .category-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .category-content h2 {
+      font-size: var(--text-lg);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .medicine-count {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .arrow-icon {
+      color: var(--color-text-tertiary);
+      transition: transform var(--duration-fast);
+    }
+
+    .category-card:hover .arrow-icon {
+      transform: translateX(4px);
+      color: var(--color-primary-600);
+    }
+  </style>
+</BaseLayout>

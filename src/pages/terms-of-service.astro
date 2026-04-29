@@ -1,0 +1,227 @@
+---
+// src/pages/terms-of-service.astro
+// Terms of Service
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Terms of Service | Janaushadhi Store';
+const description = 'Terms and Conditions for using Janaushadhi Store website. Please read carefully before using our services.';
+---
+
+<BaseLayout title={title} description={description} url="/terms-of-service">
+  <main class="legal-page">
+    <div class="container">
+      <article class="legal-content">
+        <header class="legal-header">
+          <h1>Terms of Service</h1>
+          <p class="last-updated">Last updated: {new Date().toLocaleDateString()}</p>
+        </header>
+
+        <section>
+          <h2>1. Acceptance of Terms</h2>
+          <p>
+            By accessing or using Janaushadhi Store's website (janaushadhi.oriz.in), you agree to be
+            bound by these Terms of Service. If you do not agree to these terms, please do not use
+            our website.
+          </p>
+        </section>
+
+        <section>
+          <h2>2. Use License</h2>
+          <p>
+            Permission is granted to temporarily view the materials on our website for personal,
+            non-commercial use only. This is the grant of a license, not a transfer of title.
+          </p>
+        </section>
+
+        <section>
+          <h2>3. Disclaimer</h2>
+          <p>
+            The materials on our website are provided on an 'as is' basis. We make no warranties,
+            expressed or implied, and hereby disclaim and negate all other warranties including,
+            without limitation, implied warranties or conditions of merchantability, fitness for a
+            particular purpose, or non-infringement of intellectual property.
+          </p>
+          <p>
+            <strong>Important:</strong> We are an <strong>unofficial retailer</strong>. This website
+            is not affiliated with the Government of India, BPPI, or the official Janaushadhi program.
+            All medicines are sourced through authorized distributors.
+          </p>
+        </section>
+
+        <section>
+          <h2>4. Product Information</h2>
+          <p>
+            We strive to provide accurate product information, including prices and availability.
+            However, errors may occur. We reserve the right to correct any inaccuracies and to
+            change or update information at any time without prior notice.
+          </p>
+          <p>
+            Some medicines may show "Price on Request" due to market fluctuations or special order
+            requirements.
+          </p>
+        </section>
+
+        <section>
+          <h2>5. Orders & Payment</h2>
+          <p>
+            All orders are subject to acceptance and availability. We reserve the right to refuse
+            any order. Payment is due at the time of order (for pickup) or upon delivery (COD).
+          </p>
+          <p>
+            By placing an order, you confirm that the information provided is accurate and complete.
+          </p>
+        </section>
+
+        <section>
+          <h2>6. Pickup & Delivery</h2>
+          <p>
+            <strong>Store Pickup:</strong> You may collect your order from our store during business
+            hours (24/7). Please bring a valid ID and order confirmation.
+          </p>
+          <p>
+            <strong>Cash on Delivery (COD):</strong> Available within a limited radius. Payment must
+            be made in cash at the time of delivery.
+          </p>
+        </section>
+
+        <section>
+          <h2>7. Prescription Requirements</h2>
+          <p>
+            Certain medicines require a valid prescription from a registered medical practitioner.
+            By ordering such medicines, you confirm that you possess a valid prescription and will
+            present it at the time of pickup/delivery.
+          </p>
+        </section>
+
+        <section>
+          <h2>8. Returns & Refunds</h2>
+          <p>
+            Due to the nature of pharmaceutical products, we generally do not accept returns or
+            exchanges unless:
+          </p>
+          <ul>
+            <li>The product is damaged, defective, or incorrect</li>
+            <li>The expiry date has passed</li>
+          </ul>
+          <p>
+            Please contact us within 48 hours of receipt for any issues.
+          </p>
+          <p>
+            For detailed refund information, see our <a href="/refund-policy">Refund Policy</a>.
+          </p>
+        </section>
+
+        <section>
+          <h2>9. Limitation of Liability</h2>
+          <p>
+            We shall not be liable for any indirect, incidental, special, or consequential damages
+            arising out of or in connection with your use of our website or products.
+          </p>
+        </section>
+
+        <section>
+          <h2>10. Privacy</h2>
+          <p>
+            Your use of our website is also governed by our <a href="/privacy-policy">Privacy Policy</a>.
+            Please review it to understand our privacy practices.
+          </p>
+        </section>
+
+        <section>
+          <h2>11. Governing Law</h2>
+          <p>
+            These terms shall be governed by and construed in accordance with the laws of India.
+            Any disputes shall be subject to the exclusive jurisdiction of courts in Bhubaneswar,
+            Odisha.
+          </p>
+        </section>
+
+        <section>
+          <h2>12. Changes to Terms</h2>
+          <p>
+            We reserve the right to modify these terms at any time. Continued use of the website after
+            changes constitutes your acceptance of the new terms.
+          </p>
+        </section>
+
+        <section>
+          <h2>13. Contact Us</h2>
+          <p>
+            If you have any questions about these Terms of Service, please contact us:
+          </p>
+          <ul>
+            <li>Email: <a href="mailto:hi@janaushadhi.oriz.in">hi@janaushadhi.oriz.in</a></li>
+            <li>Phone: <a href="tel:+917428449707">+91 74284 44970</a></li>
+          </ul>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <style is:global>
+    .legal-page {
+      padding: var(--space-8) 0 var(--space-16);
+    }
+
+    .legal-content {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+    }
+
+    .legal-header {
+      margin-bottom: var(--space-8);
+      padding-bottom: var(--space-6);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .legal-header h1 {
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-2);
+    }
+
+    .last-updated {
+      color: var(--color-text-secondary);
+      font-size: var(--text-sm);
+    }
+
+    section {
+      margin-bottom: var(--space-8);
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-4);
+      color: var(--color-primary-600);
+    }
+
+    h3 {
+      font-size: var(--text-lg);
+      margin: var(--space-4) 0 var(--space-2);
+    }
+
+    p {
+      margin-bottom: var(--space-4);
+      line-height: var(--leading-relaxed);
+      color: var(--color-text-secondary);
+    }
+
+    ul {
+      margin-bottom: var(--space-4);
+      padding-left: var(--space-6);
+    }
+
+    li {
+      margin-bottom: var(--space-2);
+    }
+
+    a {
+      color: var(--color-primary-600);
+      text-decoration: underline;
+    }
+  </style>
+</BaseLayout>
