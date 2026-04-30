@@ -48,7 +48,8 @@ if (typeof window !== 'undefined') {
   </main>
 
   <script is:client>
-    import { auth, db, collection, query, where, orderBy, onSnapshot } from '../lib/firebase';
+    import { auth, db } from '../lib/firebase';
+    import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 
     // Check auth state
     const user = auth.currentUser;
