@@ -161,14 +161,22 @@ const { currentPage = '' } = Astro.props;
 </script>
 
 <style is:global>
-  /* Header styles */
+  /* Header styles - enhanced */
   .site-header {
     position: sticky;
     top: 0;
     z-index: var(--z-sticky);
-    background-color: var(--color-bg-primary);
+    background: linear-gradient(to bottom, var(--color-bg-primary) 0%, var(--color-bg-primary) 100%);
     border-bottom: 1px solid var(--color-border);
     box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all var(--duration-normal) var(--ease-out);
+  }
+
+  [data-theme="dark"] .site-header {
+    background: linear-gradient(to bottom, rgba(15, 25, 35, 0.95) 0%, rgba(15, 25, 35, 0.98) 100%);
+    border-bottom-color: var(--color-border);
   }
 
   .header-container {
@@ -179,20 +187,22 @@ const { currentPage = '' } = Astro.props;
     margin: 0 auto;
     padding: 0 var(--space-4);
     height: var(--header-height);
+    gap: var(--space-4);
   }
 
-  /* Logo */
+  /* Logo - enhanced */
   .logo {
     display: flex;
     align-items: center;
     gap: var(--space-2);
     color: var(--color-primary-600);
     text-decoration: none;
-    transition: color var(--duration-fast);
+    transition: all var(--duration-fast) var(--ease-out);
   }
 
   .logo:hover {
-    color: var(--color-primary-700);
+    color: var(--color-primary-500);
+    transform: scale(1.02);
   }
 
   .logo-icon {
@@ -204,6 +214,12 @@ const { currentPage = '' } = Astro.props;
     background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
     border-radius: var(--radius-lg);
     color: white;
+    box-shadow: 0 2px 8px rgba(26, 82, 118, 0.3);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .logo:hover .logo-icon {
+    box-shadow: 0 4px 12px rgba(26, 82, 118, 0.4);
   }
 
   .logo-text {
@@ -217,6 +233,7 @@ const { currentPage = '' } = Astro.props;
     font-size: var(--text-lg);
     font-weight: var(--font-bold);
     color: var(--color-primary-600);
+    letter-spacing: -0.02em;
   }
 
   .logo-tagline {
@@ -224,6 +241,7 @@ const { currentPage = '' } = Astro.props;
     color: var(--color-text-secondary);
     text-transform: uppercase;
     letter-spacing: var(--tracking-wider);
+    font-weight: var(--font-medium);
   }
 
   /* Navigation */
@@ -250,7 +268,8 @@ const { currentPage = '' } = Astro.props;
     font-weight: var(--font-medium);
     color: var(--color-text-secondary);
     border-radius: var(--radius-md);
-    transition: all var(--duration-fast);
+    transition: all var(--duration-fast) var(--ease-out);
+    position: relative;
   }
 
   .nav-link:hover {
@@ -258,9 +277,35 @@ const { currentPage = '' } = Astro.props;
     background-color: var(--color-primary-50);
   }
 
+  [data-theme="dark"] .nav-link:hover {
+    color: var(--color-primary-300);
+    background-color: rgba(26, 82, 118, 0.2);
+  }
+
   .nav-link.active {
     color: var(--color-primary-600);
     background-color: var(--color-primary-50);
+  }
+
+  [data-theme="dark"] .nav-link.active {
+    color: var(--color-primary-300);
+    background-color: rgba(26, 82, 118, 0.2);
+  }
+
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 2px;
+    background-color: var(--color-primary-600);
+    border-radius: var(--radius-full);
+  }
+
+  [data-theme="dark"] .nav-link.active::after {
+    background-color: var(--color-primary-300);
   }
 
   /* Header Actions */
@@ -278,15 +323,21 @@ const { currentPage = '' } = Astro.props;
     height: 40px;
     border-radius: var(--radius-lg);
     color: var(--color-text-secondary);
-    transition: all var(--duration-fast);
+    transition: all var(--duration-fast) var(--ease-out);
   }
 
   .action-btn:hover {
     background-color: var(--color-grey-100);
     color: var(--color-primary-600);
+    transform: translateY(-1px);
   }
 
-  /* Cart button with badge */
+  [data-theme="dark"] .action-btn:hover {
+    background-color: var(--color-grey-800);
+    color: var(--color-primary-300);
+  }
+
+  /* Cart button with badge - enhanced */
   .cart-btn {
     position: relative;
   }
@@ -301,14 +352,15 @@ const { currentPage = '' } = Astro.props;
     min-width: 18px;
     height: 18px;
     padding: 0 4px;
-    background-color: var(--color-accent-500);
+    background: linear-gradient(135deg, var(--color-accent-500), var(--color-accent-600));
     color: white;
     font-size: 10px;
     font-weight: var(--font-bold);
     border-radius: var(--radius-full);
     opacity: 0;
     transform: scale(0.8);
-    transition: all var(--duration-fast);
+    transition: all var(--duration-fast) var(--ease-bounce);
+    box-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
   }
 
   .cart-count.visible {
@@ -316,7 +368,7 @@ const { currentPage = '' } = Astro.props;
     transform: scale(1);
   }
 
-  /* Auth button */
+  /* Auth button - enhanced */
   .auth-btn {
     display: flex;
     align-items: center;
@@ -324,16 +376,29 @@ const { currentPage = '' } = Astro.props;
     width: 40px;
     height: 40px;
     border-radius: var(--radius-full);
-    background-color: var(--color-primary-100);
+    background: linear-gradient(135deg, var(--color-primary-100), var(--color-primary-50));
     color: var(--color-primary-600);
-    transition: all var(--duration-fast);
+    transition: all var(--duration-fast) var(--ease-out);
+    border: 1px solid transparent;
+  }
+
+  [data-theme="dark"] .auth-btn {
+    background: linear-gradient(135deg, var(--color-primary-900), var(--color-primary-800));
+    color: var(--color-primary-300);
   }
 
   .auth-btn:hover {
-    background-color: var(--color-primary-200);
+    background: linear-gradient(135deg, var(--color-primary-200), var(--color-primary-100));
+    border-color: var(--color-primary-300);
+    transform: scale(1.05);
   }
 
-  /* Dark mode toggle */
+  [data-theme="dark"] .auth-btn:hover {
+    background: linear-gradient(135deg, var(--color-primary-700), var(--color-primary-600));
+    color: white;
+  }
+
+  /* Dark mode toggle - enhanced */
   .theme-toggle {
     display: flex;
     align-items: center;
@@ -342,12 +407,34 @@ const { currentPage = '' } = Astro.props;
     height: 40px;
     border-radius: var(--radius-lg);
     color: var(--color-text-secondary);
-    transition: all var(--duration-fast);
+    transition: all var(--duration-fast) var(--ease-out);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .theme-toggle::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--color-primary-100), var(--color-accent-100));
+    opacity: 0;
+    transition: opacity var(--duration-fast);
+    border-radius: var(--radius-lg);
+  }
+
+  .theme-toggle:hover::before {
+    opacity: 1;
+  }
+
+  .theme-toggle svg {
+    position: relative;
+    z-index: 1;
+    transition: all var(--duration-fast) var(--ease-out);
   }
 
   .theme-toggle:hover {
-    background-color: var(--color-grey-100);
-    color: var(--color-warning-500);
+    color: var(--color-primary-600);
+    transform: rotate(15deg);
   }
 
   .icon-sun {
@@ -374,6 +461,17 @@ const { currentPage = '' } = Astro.props;
     width: 40px;
     height: 40px;
     color: var(--color-text-secondary);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .mobile-menu-btn:hover {
+    background-color: var(--color-grey-100);
+    color: var(--color-primary-600);
+  }
+
+  [data-theme="dark"] .mobile-menu-btn:hover {
+    background-color: var(--color-grey-800);
+    color: var(--color-primary-300);
   }
 
   @media (min-width: 768px) {
@@ -392,6 +490,18 @@ const { currentPage = '' } = Astro.props;
 
   .mobile-nav.open {
     display: block;
+    animation: slideDown var(--duration-fast) var(--ease-out);
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .mobile-nav-list {
@@ -407,11 +517,46 @@ const { currentPage = '' } = Astro.props;
     font-weight: var(--font-medium);
     color: var(--color-text-primary);
     border-radius: var(--radius-md);
-    transition: background-color var(--duration-fast);
+    transition: all var(--duration-fast);
   }
 
   .mobile-nav-list a:hover {
     background-color: var(--color-grey-100);
     color: var(--color-primary-600);
+  }
+
+  [data-theme="dark"] .mobile-nav-list a:hover {
+    background-color: var(--color-grey-800);
+    color: var(--color-primary-300);
+  }
+
+  /* Disclaimer Banner - enhanced */
+  .disclaimer-banner {
+    background: linear-gradient(135deg, var(--color-warning-light), rgba(255, 193, 7, 0.1));
+    border-top: 1px solid var(--color-warning);
+    padding: var(--space-2) var(--space-4);
+    text-align: center;
+    font-size: var(--text-xs);
+    color: var(--color-warning-dark);
+  }
+
+  .disclaimer-banner a {
+    color: var(--color-warning-dark);
+    font-weight: var(--font-semibold);
+    text-decoration: underline;
+    transition: color var(--duration-fast);
+  }
+
+  .disclaimer-banner a:hover {
+    color: var(--color-warning);
+  }
+
+  [data-theme="dark"] .disclaimer-banner {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 193, 7, 0.1));
+    color: var(--color-warning-200);
+  }
+
+  [data-theme="dark"] .disclaimer-banner a {
+    color: var(--color-warning-200);
   }
 </style>

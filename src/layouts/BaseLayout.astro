@@ -6,6 +6,8 @@
 // Import globally across all pages
 
 import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 
 interface Props {
   title: string;
@@ -220,7 +222,11 @@ function generateStructuredData() {
 </head>
 
 <body>
-  <slot />
+  <Header />
+  <div class="main-content">
+    <slot />
+  </div>
+  <Footer />
 
   <!-- PWA Service Worker Registration -->
   <script>
@@ -245,4 +251,13 @@ function generateStructuredData() {
     // gtag('config', 'G-XXXXXXX');
   </script>
 </body>
+
+<style is:global>
+  /* BaseLayout wrapper styles */
+  .main-content {
+    min-height: calc(100vh - var(--header-height) - 300px);
+    display: flex;
+    flex-direction: column;
+  }
+</style>
 </html>

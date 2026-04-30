@@ -1,4 +1,3 @@
----
 // src/components/SearchBar.tsx
 //
 // React Island: Search bar with Fuse.js fuzzy search

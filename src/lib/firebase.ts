@@ -20,14 +20,39 @@ const hasFirebaseConfig = Object.values(firebaseConfig).every(v => v && v !== ''
 export { firebaseConfig, hasFirebaseConfig };
 
 // Stubs for build time
-export const auth = null;
-export const db = null;
-export const googleProvider = null;
-export const phoneProvider = null;
+export let auth: any = null;
+export let db: any = null;
+export let googleProvider: any = null;
+export let phoneProvider: any = null;
 export const collections = {
   users: null,
   orders: null,
   wishlist: null,
+};
+
+export const signInWithGoogle = async () => {
+  const authInstance = getAuthInstance();
+  if (!authInstance) throw new Error("Firebase Auth not initialized");
+  const { GoogleAuthProvider, signInWithPopup } = await import('firebase/auth');
+  const provider = new GoogleAuthProvider();
+  return signInWithPopup(authInstance, provider);
+};
+
+export const signOutUser = async () => {
+  const authInstance = getAuthInstance();
+  if (!authInstance) throw new Error("Firebase Auth not initialized");
+  const { signOut } = await import('firebase/auth');
+  return signOut(authInstance);
+};
+
+export const onAuthStateChanged = (authObj: any, callback: (user: any) => void) => {
+  const authInstance = getAuthInstance();
+  if (!authInstance) {
+    callback(null);
+    return () => {};
+  }
+  const { onAuthStateChanged: firebaseOnAuthStateChanged } = require('firebase/auth');
+  return firebaseOnAuthStateChanged(authInstance, callback);
 };
 
 // Helper functions that initialize Firebase on-demand in the browser

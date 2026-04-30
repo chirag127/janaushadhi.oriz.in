@@ -1,4 +1,3 @@
----
 // src/components/AuthButton.tsx
 // Authentication button (React island)
 

@@ -1,0 +1,117 @@
+{
+  "name": "Janaushadhi Store - Chirag Singhal's Jan Aushadhi Kendra",
+  "short_name": "Janaushadhi",
+  "description": "Browse 2,400+ generic medicines at Chirag Singhal's Jan Aushadhi Kendra, Bhubaneswar. 24/7 service, pickup & COD available.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a5276",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["shopping", "health", "medical"],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Medicine listing page"
+    },
+    {
+      "src": "/screenshots/mobile-1.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Medicine detail page"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.janaushadhi.store",
+      "id": "com.janaushadhi.store"
+    }
+  ],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Search Medicines",
+      "short_name": "Search",
+      "description": "Search for medicines by name or code",
+      "url": "/search",
+      "icons": [{ "src": "/icons/search-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "View Cart",
+      "short_name": "Cart",
+      "description": "View your shopping cart",
+      "url": "/cart",
+      "icons": [{ "src": "/icons/cart-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "All Medicines",
+      "short_name": "Medicines",
+      "description": "Browse all medicines",
+      "url": "/medicines",
+      "icons": [{ "src": "/icons/medicine-96x96.png", "sizes": "96x96" }]
+    }
+  ],
+  "share_target": {
+    "action": "/search",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}

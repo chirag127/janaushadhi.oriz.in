@@ -189,30 +189,15 @@ if (cartItems.length === 0) {
           <div class="summary-card">
             <h2>Order Summary</h2>
 
-            <div class="order-items">
-              {cartItems.slice(0, 5).map(item => (
-                <div class="summary-item" key={item.slug}>
-                  <div class="item-info">
-                    <span class="item-name">{item.medicine?.genericName || item.slug}</span>
-                    <span class="item-qty">Qty: {item.quantity}</span>
-                  </div>
-                  <span class="item-price">
-                    {item.medicine?.isPriceOnRequest ? 'POR' : `₹${(item.medicine?.mrp || 0 * item.quantity).toFixed(2)}`}
-                  </span>
-                </div>
-              ))}
-              {cartItems.length > 5 && (
-                <div class="more-items">
-                  + {cartItems.length - 5} more items
-                </div>
-              )}
+            <div class="order-items" id="checkout-order-items">
+              <!-- Rendered via client JS -->
             </div>
 
             <div class="summary-divider"></div>
 
             <div class="summary-row">
               <span>Subtotal</span>
-              <span>₹{subtotal.toFixed(2)}</span>
+              <span id="summary-subtotal">₹0.00</span>
             </div>
             <div class="summary-row">
               <span>Delivery/Pickup</span>
@@ -221,7 +206,7 @@ if (cartItems.length === 0) {
             <div class="summary-divider"></div>
             <div class="summary-row total">
               <span>Total</span>
-              <span>₹{total.toFixed(2)}</span>
+              <span id="summary-total">₹0.00</span>
             </div>
 
             <div class="store-info">
@@ -230,7 +215,7 @@ if (cartItems.length === 0) {
                 <strong>Chirag Singhal's Jan Aushadhi Kendra</strong><br/>
                 Plot #448, Niladri Vihar, Lane 5, Sector 5<br/>
                 Chandrasekharpur, Bhubaneswar - 751021<br/>
-                <a href="tel:+917428449707">+91 74284 44970</a><br/>
+                <a href="tel:+917428449707">+91 74284 49707</a><br/>
                 <a href="mailto:hi@janaushadhi.oriz.in">hi@janaushadhi.oriz.in</a><br/>
                 24/7 Service
               </p>
@@ -283,6 +268,56 @@ if (cartItems.length === 0) {
       document.getElementById('prescription').value = '';
       document.getElementById('file-preview').innerHTML = '';
     }
+
+    // Load items on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const cart = JSON.parse(localStorage.getItem('janaushadhi-cart') || '[]');
+      const container = document.getElementById('checkout-order-items');
+      const subtotalEl = document.getElementById('summary-subtotal');
+      const totalEl = document.getElementById('summary-total');
+
+      if (!container) return;
+
+      if (cart.length === 0) {
+        window.location.href = '/cart';
+        return;
+      }
+
+      let subtotal = 0;
+      let html = '';
+
+      cart.slice(0, 5).forEach(item => {
+        const itemTotal = item.mrp * item.quantity;
+        if (!item.isPriceOnRequest) subtotal += itemTotal;
+        
+        html += `
+          <div class="summary-item">
+            <div class="item-info">
+              <span class="item-name">${item.genericName || item.slug}</span>
+              <span class="item-qty">Qty: ${item.quantity}</span>
+            </div>
+            <span class="item-price">
+              ${item.isPriceOnRequest ? 'POR' : '₹' + itemTotal.toFixed(2)}
+            </span>
+          </div>
+        `;
+      });
+
+      if (cart.length > 5) {
+        html += `
+          <div class="more-items">
+            + ${cart.length - 5} more items
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+      if (subtotalEl) subtotalEl.textContent = '₹' + subtotal.toFixed(2);
+      if (totalEl) totalEl.textContent = '₹' + subtotal.toFixed(2);
+      
+      // Store subtotal globally for EmailJS
+      window.checkoutSubtotal = subtotal;
+    });
 
     // Form submission via EmailJS
     document.getElementById('order-form')?.addEventListener('submit', async function(e) {
@@ -340,12 +375,11 @@ if (cartItems.length === 0) {
             order_type: orderData.orderType === 'pickup' ? 'Store Pickup' : 'Cash on Delivery',
             order_notes: orderData.notes || 'None',
             items: orderData.items.map(item =>
-              `${item.medicine?.genericName || item.slug} (${item.quantity}x)`
+              `${item.genericName || item.slug} (${item.quantity}x)`
             ).join('\n'),
-            total_amount: `₹${subtotal.toFixed(2)}`
+            total_amount: `₹${(window.checkoutSubtotal || 0).toFixed(2)}`
           },
-          import.meta.env.EMAILJS_PUBLIC_KEY
-        );
+          import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY || 'ez_TbfaB5JPmwPKek'        );
 
         if (response.status === 200) {
           // Save order to Firestore (optional - requires auth)

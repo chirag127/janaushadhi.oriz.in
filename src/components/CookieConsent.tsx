@@ -1,4 +1,3 @@
----
 // src/components/CookieConsent.tsx
 // Cookie consent banner (React island)
 

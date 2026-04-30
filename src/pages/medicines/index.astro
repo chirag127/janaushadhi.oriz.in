@@ -247,7 +247,7 @@ const breadcrumbs = [
               {selectedCategories.map(cat => (
                 <span class="filter-tag" key={cat}>
                   {cat}
-                  <button onclick="removeCategory('${cat}')" aria-label="Remove filter">×</button>
+                  <button onclick={`removeCategory('${cat}')`} aria-label="Remove filter">×</button>
                 </span>
               ))}
               {(minPrice > 0 || maxPrice < 999999) && (
@@ -433,6 +433,10 @@ const breadcrumbs = [
     /* Filter Sidebar */
     .filter-sidebar {
       display: none;
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
     }
 
     @media (min-width: 1024px) {
@@ -446,15 +450,29 @@ const breadcrumbs = [
       justify-content: space-between;
       align-items: center;
       margin-bottom: var(--space-6);
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--color-border);
     }
 
     .filter-header h2 {
       font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      color: var(--color-text-primary);
     }
 
     .clear-filters {
       font-size: var(--text-sm);
       color: var(--color-primary-600);
+      font-weight: var(--font-medium);
+      transition: all var(--duration-fast);
+    }
+
+    [data-theme="dark"] .clear-filters {
+      color: var(--color-primary-300);
+    }
+
+    .clear-filters:hover {
+      color: var(--color-accent-600);
     }
 
     .filter-section {
@@ -482,6 +500,29 @@ const breadcrumbs = [
       gap: var(--space-2);
       max-height: 300px;
       overflow-y: auto;
+      padding-right: var(--space-2);
+    }
+
+    .filter-options::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .filter-options::-webkit-scrollbar-track {
+      background: var(--color-grey-100);
+      border-radius: var(--radius-full);
+    }
+
+    .filter-options::-webkit-scrollbar-thumb {
+      background: var(--color-grey-300);
+      border-radius: var(--radius-full);
+    }
+
+    [data-theme="dark"] .filter-options::-webkit-scrollbar-track {
+      background: var(--color-grey-800);
+    }
+
+    [data-theme="dark"] .filter-options::-webkit-scrollbar-thumb {
+      background: var(--color-grey-600);
     }
 
     .filter-checkbox {
@@ -490,13 +531,26 @@ const breadcrumbs = [
       gap: var(--space-2);
       font-size: var(--text-sm);
       cursor: pointer;
-      padding: var(--space-1) 0;
+      padding: var(--space-1) var(--space-2);
+      margin: 0 calc(var(--space-1) * -1);
+      border-radius: var(--radius-md);
+      transition: background-color var(--duration-fast);
+    }
+
+    .filter-checkbox:hover {
+      background-color: var(--color-grey-50);
+    }
+
+    [data-theme="dark"] .filter-checkbox:hover {
+      background-color: rgba(255, 255, 255, 0.05);
     }
 
     .filter-checkbox input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       accent-color: var(--color-primary-600);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
     }
 
     .checkbox-text {
@@ -508,8 +562,14 @@ const breadcrumbs = [
       font-size: var(--text-xs);
       color: var(--color-text-tertiary);
       background-color: var(--color-grey-100);
-      padding: 1px 6px;
+      padding: 2px 6px;
       border-radius: var(--radius-sm);
+      font-weight: var(--font-medium);
+    }
+
+    [data-theme="dark"] .checkbox-count {
+      background-color: var(--color-grey-800);
+      color: var(--color-grey-300);
     }
 
     .show-more-btn {
@@ -527,10 +587,29 @@ const breadcrumbs = [
 
     .price-inputs input {
       flex: 1;
-      padding: var(--space-2);
+      padding: var(--space-2) var(--space-3);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
       font-size: var(--text-sm);
+      background-color: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      transition: all var(--duration-fast);
+    }
+
+    .price-inputs input:focus {
+      outline: none;
+      border-color: var(--color-primary-500);
+      box-shadow: 0 0 0 3px rgba(26, 82, 118, 0.1);
+    }
+
+    [data-theme="dark"] .price-inputs input {
+      background-color: var(--color-grey-800);
+      color: var(--color-text-primary);
+      border-color: var(--color-border);
+    }
+
+    [data-theme="dark"] .price-inputs input:focus {
+      border-color: var(--color-primary-400);
     }
 
     .view-mode-toggle {
@@ -540,6 +619,10 @@ const breadcrumbs = [
       padding: var(--space-1);
       border-radius: var(--radius-md);
       width: fit-content;
+    }
+
+    [data-theme="dark"] .view-mode-toggle {
+      background-color: var(--color-grey-800);
     }
 
     .view-btn {
@@ -559,6 +642,10 @@ const breadcrumbs = [
       box-shadow: var(--shadow-sm);
     }
 
+    [data-theme="dark"] .view-btn.active {
+      background-color: var(--color-grey-600);
+    }
+
     /* Main Content */
     .main-content {
       flex: 1;
@@ -571,6 +658,15 @@ const breadcrumbs = [
       margin-bottom: var(--space-4);
       flex-wrap: wrap;
       gap: var(--space-4);
+      padding: var(--space-4);
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border);
+    }
+
+    [data-theme="dark"] .toolbar {
+      background: var(--color-grey-800);
+      border-color: var(--color-border);
     }
 
     .results-count {
@@ -587,6 +683,7 @@ const breadcrumbs = [
     .sort-control label {
       font-size: var(--text-sm);
       color: var(--color-text-secondary);
+      font-weight: var(--font-medium);
     }
 
     .sort-control select {
@@ -597,6 +694,20 @@ const breadcrumbs = [
       background-color: var(--color-bg-primary);
       color: var(--color-text-primary);
       cursor: pointer;
+      min-width: 160px;
+      transition: all var(--duration-fast);
+    }
+
+    .sort-control select:focus {
+      outline: none;
+      border-color: var(--color-primary-500);
+      box-shadow: 0 0 0 3px rgba(26, 82, 118, 0.1);
+    }
+
+    [data-theme="dark"] .sort-control select {
+      background-color: var(--color-grey-700);
+      color: var(--color-text-primary);
+      border-color: var(--color-border);
     }
 
     /* Active Filters */
@@ -679,6 +790,7 @@ const breadcrumbs = [
       align-items: center;
       gap: var(--space-2);
       margin-top: var(--space-12);
+      padding: var(--space-4) 0;
     }
 
     .page-btn {
@@ -690,16 +802,25 @@ const breadcrumbs = [
       font-weight: var(--font-medium);
       color: var(--color-text-primary);
       transition: all var(--duration-fast);
+      position: relative;
     }
 
-    .page-btn:hover:not(.disabled) {
+    .page-btn:hover:not(:disabled) {
       border-color: var(--color-primary-500);
       color: var(--color-primary-600);
+      background-color: var(--color-primary-50);
+      transform: translateY(-1px);
     }
 
-    .page-btn.disabled {
+    [data-theme="dark"] .page-btn:hover:not(:disabled) {
+      background-color: rgba(26, 82, 118, 0.2);
+    }
+
+    .page-btn:disabled,
+    .page-btn[aria-disabled="true"] {
       opacity: 0.5;
       cursor: not-allowed;
+      pointer-events: none;
     }
 
     .page-numbers {
@@ -718,15 +839,22 @@ const breadcrumbs = [
       font-weight: var(--font-medium);
       color: var(--color-text-secondary);
       transition: all var(--duration-fast);
+      border: 1px solid transparent;
     }
 
     .page-number:hover {
       background-color: var(--color-grey-100);
+      color: var(--color-text-primary);
+    }
+
+    [data-theme="dark"] .page-number:hover {
+      background-color: var(--color-grey-700);
     }
 
     .page-number.active {
-      background-color: var(--color-primary-600);
+      background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-700));
       color: white;
+      box-shadow: 0 2px 8px rgba(26, 82, 118, 0.3);
     }
 
     .page-ellipsis {
